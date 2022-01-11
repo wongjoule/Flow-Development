@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - BlackInk
+  - Level
+  - Border
+  - Part
+  - Tunnel
+  - Joystick
   layers:
   - Default
   - TransparentFX
@@ -38,6 +44,24 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2974062363
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Border
+    uniqueID: 3950202889
+    locked: 0
+  - name: BlackInk
+    uniqueID: 3493634279
+    locked: 0
+  - name: Player
+    uniqueID: 855030739
+    locked: 0
+  - name: Menu
+    uniqueID: 1182922321
+    locked: 0
+  - name: Completion
+    uniqueID: 1912794683
     locked: 0
