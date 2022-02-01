@@ -32,7 +32,7 @@ public class S_Camera : MonoBehaviour
 
     void Start()
     {
-        AspectRatio();
+        Initialize_AspectRatio();
     }
 
 
@@ -70,7 +70,7 @@ public class S_Camera : MonoBehaviour
 
 
 
-    void AspectRatio()
+    void Initialize_AspectRatio()
     {
         // Calculate the target screen aspect ratio (0.5625:1)
         float f_Target = 9f / 16f;

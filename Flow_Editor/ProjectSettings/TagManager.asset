@@ -65,3 +65,12 @@ TagManager:
   - name: Completion
     uniqueID: 1912794683
     locked: 0
+  - name: Text
+    uniqueID: 1701153855
+    locked: 0
+  - name: SubMenu
+    uniqueID: 178308853
+    locked: 0
+  - name: Transition
+    uniqueID: 76079167
+    locked: 0

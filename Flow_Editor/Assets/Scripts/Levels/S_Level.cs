@@ -26,12 +26,14 @@ public class S_Level : MonoBehaviour
     Transform t_Camera;
     S_Camera s_Camera;
     S_Controller s_Controller;
+    S_SubMenu s_SubMenu;
 
     // Variables - View Mode
     [HideInInspector] public bool b_IsFullView = false; // Unified management of the control of the Full View
     [HideInInspector] public List<SpriteRenderer> list_ViewModeSprite = new List<SpriteRenderer>();
     float f_ViewModeAlpha = 1f;
-    SpriteRenderer c_BackgroundSprite;
+    SpriteRenderer c_BackgroundPauseSprite; // 'Pause and Observe' background sprite that fades in when zoomed out
+    SpriteRenderer c_BackgroundShadowSprite;
 
     // Variables - Splash
     float f_SplashCooldown = 0f;
@@ -76,18 +78,24 @@ public class S_Level : MonoBehaviour
     [HideInInspector] public GameObject prefab_Player;
     [HideInInspector] public GameObject prefab_BlackInk;
     [HideInInspector] public GameObject prefab_Revealer;
-    [HideInInspector] public GameObject prefab_Panel; // A full-screen panel made with sprite
+    [HideInInspector] public GameObject prefab_FullPanel; // A full-screen panel made with sprite
     [HideInInspector] public GameObject prefab_Splash;
 
 
 
     void Awake()
     {
-        // Generic Variables
+        // Priorities
+        s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
+        s_SubMenu.Initialize("Level");
+        // General Variables
         t_Player = GameObject.FindWithTag("Player").transform;
         t_Camera = GameObject.FindWithTag("MainCamera").transform;
         s_Camera = t_Camera.GetComponent<S_Camera>();
         s_Controller = GameObject.Find("CONTROLLERS").GetComponent<S_Controller>();
+        // Variables - View Mode
+        c_BackgroundPauseSprite = GameObject.Find("Background_Pause").GetComponent<SpriteRenderer>();
+        c_BackgroundShadowSprite = GameObject.Find("Background_Shadow").GetComponent<SpriteRenderer>();
         // Variables - Black Ink
         t_BlackInkParent = GameObject.Find("BLACKINKS").transform;
         // Variables - Parts
@@ -110,19 +118,8 @@ public class S_Level : MonoBehaviour
         prefab_Player = Resources.Load<GameObject>("Prefabs/Player");
         prefab_BlackInk = Resources.Load<GameObject>("Prefabs/BlackInk");
         prefab_Revealer = Resources.Load<GameObject>("Prefabs/Revealer");
-        prefab_Panel = Resources.Load<GameObject>("Prefabs/Panel");
+        prefab_FullPanel = Resources.Load<GameObject>("Prefabs/FullPanel");
         prefab_Splash = Resources.Load<GameObject>("Prefabs/Splash");
-
-
-        c_BackgroundSprite = GameObject.Find("Background_FullView").GetComponent<SpriteRenderer>();
-
-
-
-
-
-
-        // Temporary
-        Application.targetFrameRate = 60;
 
     }
 
@@ -170,11 +167,12 @@ public class S_Level : MonoBehaviour
                         c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
                     }
                     // Fade in the silhouette hint image
-                    // Note: Here f_Alpha is inverted, its maximum value is '0.5'
+                    // Note: Here f_HintAlpha is inverted, and its maximum value is '0.5'
                     float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
                     c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
-
-                    c_BackgroundSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
+                    // Fade in the background sprites when in Full View mode
+                    c_BackgroundPauseSprite.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
+                    c_BackgroundShadowSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
                 }
 
                 break;
@@ -194,11 +192,12 @@ public class S_Level : MonoBehaviour
                         c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
                     }
                     // Fade out the silhouette hint image
-                    // Note: Here f_Alpha is inverted, its minimum value is '0'
+                    // Note: Here f_Alpha is inverted, and its minimum value is '0'
                     float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
                     c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
-
-                    c_BackgroundSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
+                    // Fade out the background sprites when in Default View mode
+                    c_BackgroundPauseSprite.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
+                    c_BackgroundShadowSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
                 }
 
                 break;
@@ -213,13 +212,6 @@ public class S_Level : MonoBehaviour
 
     bool Initialize_Prerequisite()
     {
-        // Check whether all stuffs can be tracked in the Resources folder
-        // If one of them cannot be tracked, stop the level initialization
-        if (!Initialize_Prerequisite_ResourcesPath())
-        {
-            return false;
-        }
-
         // Get the total amount of Black Inks at the current level pool
         i_TotalInkPool = i_IdleInkPool + i_SpreadingInkPool + i_FadingInkPool + i_MovingInkPool + i_MaliciousInkPool;
         S_DebugLog.LevelLog("Total amount of Black Ink Slots required (Pool + Teleport) = ", $"{i_TotalInkPool} + {i_FadingInkPool}");
@@ -265,7 +257,7 @@ public class S_Level : MonoBehaviour
             // Get the current child's sprite renderer component
             SpriteRenderer c_Sprite = t_PartsParent.GetChild(i).GetComponent<SpriteRenderer>();
             // Initialize its sorting order according to the current loop index
-            // Note: Add a value of 1 so it starts from index 1
+            // Note: Make it starts from index 1 instead of zero
             c_Sprite.sortingOrder = i + 1;
             // Initialize its object's tag
             c_Sprite.tag = "Part";
@@ -354,23 +346,19 @@ public class S_Level : MonoBehaviour
     {
         // Create a placeholder to store a random number
         int i_RandomIndex;
-
         // Generate a list of unique random numbers
         for (int i = 0; i < i_TotalInkSlot; i++)
         {
             // Firstly, Generate the first random number
             i_RandomIndex = Random.Range(0, i_TotalInkSlot);
-
             // Secondly, Check and repeat if the list already contains the current generated number
             while (list_InkOrder.Contains(i_RandomIndex))
             {
                 i_RandomIndex = Random.Range(0, i_TotalInkSlot);
             }
-
             // Lastly, Add the generated unique number to the list
             list_InkOrder.Add(i_RandomIndex);
         }
-
         S_DebugLog.LevelLog("Black Ink's Order List = ", string.Join(", ", list_InkOrder.ConvertAll(i => i.ToString()).ToArray()));
     }
 
@@ -531,39 +519,16 @@ public class S_Level : MonoBehaviour
 
 
 
-    bool Initialize_Prerequisite_ResourcesPath()
-    {
-        // Note: If one of them cannot be loaded, stop the level initialization
-
-        if (prefab_Player == null)
-            S_DebugLog.ErrorLog("'Resources/Prefabs/Player.prefab' cannot be located.");
-
-        if (prefab_BlackInk == null)
-            S_DebugLog.ErrorLog("'Resources/Prefabs/BlackInk.prefab' cannot be located.");
-
-        if (prefab_Revealer == null)
-            S_DebugLog.ErrorLog("'Resources/Prefabs/Revealer.prefab' cannot be located.");
-
-        if (prefab_Panel == null)
-            S_DebugLog.ErrorLog("'Resources/Prefabs/Panel.prefab' cannot be located.");
-
-        if (prefab_Splash == null)
-            S_DebugLog.ErrorLog("'Resources/Prefabs/Splash.prefab' cannot be located.");
-
-        // If every conditions above are met, return 'true' and the level initialization process continues
-        return true;
-    }
-
-
-
     // ------------------------------------------------------------ //
+
+
 
     // Used in [S_Controller]
     public void Splash(Vector3 v_TapWorld)
     {
-        // Check if the cooldown timer has been completed and there is still ammunition
-        // Note: During the cooldown period, f_SplashCooldown is always greater than the current time
-        if (f_SplashCooldown < Time.time)
+        // Check if the cooldown timer has been completed
+        // Note: Not sure if total splash charges are limited too
+        if (Time.time > f_SplashCooldown)
         {
             StartCoroutine(Coroutine_Splash(v_TapWorld));
             // Note: You can define the cooldown duration here (in seconds)
@@ -591,15 +556,6 @@ public class S_Level : MonoBehaviour
         // Print out the log
         S_DebugLog.Log($"Current Progress = {i_Progress} / {i_CompleteProgress} ------- ",
         f_Percentage.ToString("F1") + "%");
-
-        // -------------------- ! PROGRESS BAR ADJUSTMENT ! -------------------- //
-
-        // Local Variables
-        // Note: Absolute path may become a dependency problem in the future
-        Transform t_ProgressBar = t_MenuBarParent.GetChild(3);
-        // Adjust the progress bar according to the player's current progress
-        // Note: The maximum value of scale is '1', which is equal to 100% progress
-        t_ProgressBar.localScale = new Vector3(f_Percentage / 100f, 1, 1);
 
         // -------------------- ! HINT BUTTON APPEARANCE ! -------------------- //
 
@@ -643,23 +599,13 @@ public class S_Level : MonoBehaviour
         StartCoroutine(Coroutine_Respawn());
         // Lose one life. You can still continue even with 'zero' lives
         // Note: More like "Chances", 'zero' means you have no more chances
-        // Note: It need to reach a value of '-1' to count as death
+        // Note: Have to reach a value of '-1' to count as death
         i_Life -= 1;
         // Check if it is less than zero (reaches '-1'). If so, level failed
         if (i_Life < 0)
         {
             S_DebugLog.TestingLog("You died! Current life value is = ", i_Life);
-            // Do return for now, until I have implemented Scene Manager
-            return;
         }
-
-        // -------------------- ! LIFE BAR DEACTIVATION ! -------------------- //
-
-        // Deactivate one life object on the life bar
-        // Note: Absolute path may become a dependency problem in the future
-        // Note: Reverse the order of getchild so that it disappears from the left
-        int i_Order = 2 - i_Life;
-        t_MenuBarParent.GetChild(i_Order).gameObject.SetActive(false);
     }
 
 
@@ -831,12 +777,12 @@ public class S_Level : MonoBehaviour
         // 4th, Create a full-screen panel to block other visual elements
         // Note: The animation object's sorting order is '1'
         // Note: Currently, Panel's sprite alpha is zero
-        GameObject o_Panel_Completion = Instantiate(prefab_Panel, t_AnimationParent);
-        SpriteRenderer c_Panel_Completion_Sprite = o_Panel_Completion.GetComponent<SpriteRenderer>();
-        o_Panel_Completion.name = "Panel_Completion";
-        c_Panel_Completion_Sprite.sortingLayerName = "Completion";
-        c_Panel_Completion_Sprite.sortingOrder = 0;
-        c_Panel_Completion_Sprite.color = Color.clear;
+        GameObject o_FullPanel_Completion = Instantiate(prefab_FullPanel, t_AnimationParent);
+        SpriteRenderer c_FullPanel_Completion_Sprite = o_FullPanel_Completion.GetComponent<SpriteRenderer>();
+        o_FullPanel_Completion.name = "FullPanel_Completion";
+        c_FullPanel_Completion_Sprite.sortingLayerName = "Completion";
+        c_FullPanel_Completion_Sprite.sortingOrder = 0;
+        c_FullPanel_Completion_Sprite.color = Color.clear;
         // 5th, Activate the completion animation object
         // Note: Currently, Animator is paused and Animation's sprite alpha is zero
         GameObject o_Animation = t_AnimationParent.GetChild(0).gameObject;
@@ -857,7 +803,7 @@ public class S_Level : MonoBehaviour
         // Note: This will be a 1 second loop and also it acts like Update()
         while (f_Time <= 1)
         {
-            c_Panel_Completion_Sprite.color = new Color(0.89f, 0.89f, 0.89f, f_Time);
+            c_FullPanel_Completion_Sprite.color = new Color(0.89f, 0.89f, 0.89f, f_Time);
             c_Animation_Sprite.color = new Color(1, 1, 1, f_Time);
             // Calculate the time spent in seconds
             f_Time += Time.deltaTime;
@@ -874,30 +820,30 @@ public class S_Level : MonoBehaviour
         // 10th, Create another full-screen panel to darken the background
         // Note: The card object's sorting order is '3'
         // Note: Currently, Panel_Black's sprite alpha is zero
-        GameObject o_Panel_Black = Instantiate(prefab_Panel, t_AnimationParent);
-        SpriteRenderer c_Panel_Black_Sprite = o_Panel_Black.GetComponent<SpriteRenderer>();
-        o_Panel_Black.name = "Panel_Black";
-        c_Panel_Black_Sprite.sortingLayerName = "Completion";
-        c_Panel_Black_Sprite.sortingOrder = 2;
-        c_Panel_Black_Sprite.color = Color.clear;
+        GameObject o_FullPanel_Black = Instantiate(prefab_FullPanel, t_AnimationParent);
+        SpriteRenderer c_FullPanel_Black_Sprite = o_FullPanel_Black.GetComponent<SpriteRenderer>();
+        o_FullPanel_Black.name = "FullPanel_Black";
+        c_FullPanel_Black_Sprite.sortingLayerName = "Completion";
+        c_FullPanel_Black_Sprite.sortingOrder = 2;
+        c_FullPanel_Black_Sprite.color = Color.clear;
         // 11th, Create the last full-screen panel to simulate the screenshot effect
         // Note: [0] Panel_Completion; [1] Animation; [2] Panel_Black; [3] Card; [4] Panel_Screenshot 
         // Note: Currently, Panel_Screenshot's sprite alpha is zero
-        GameObject o_Panel_Screenshot = Instantiate(prefab_Panel, t_AnimationParent);
-        SpriteRenderer c_Panel_Screenshot_Sprite = o_Panel_Screenshot.GetComponent<SpriteRenderer>();
-        o_Panel_Screenshot.name = "Panel_Screenshot";
-        c_Panel_Screenshot_Sprite.sortingLayerName = "Completion";
-        c_Panel_Screenshot_Sprite.sortingOrder = 4;
-        c_Panel_Screenshot_Sprite.color = Color.clear;
+        GameObject o_FullPanel_Screenshot = Instantiate(prefab_FullPanel, t_AnimationParent);
+        SpriteRenderer c_FullPanel_Screenshot_Sprite = o_FullPanel_Screenshot.GetComponent<SpriteRenderer>();
+        o_FullPanel_Screenshot.name = "FullPanel_Screenshot";
+        c_FullPanel_Screenshot_Sprite.sortingLayerName = "Completion";
+        c_FullPanel_Screenshot_Sprite.sortingOrder = 4;
+        c_FullPanel_Screenshot_Sprite.color = Color.clear;
 
         // -------------------- ! START SCREENSHOT ! -------------------- //
 
         // 12th, Pause the animation in the middle
         c_Animation_Animator.speed = 0;
         // 13th, Make both panels appear and stay for a while
-        c_Panel_Screenshot_Sprite.color = Color.white;
+        c_FullPanel_Screenshot_Sprite.color = Color.white;
         yield return null;
-        c_Panel_Black_Sprite.color = new Color(0, 0, 0, 0.6f);
+        c_FullPanel_Black_Sprite.color = new Color(0, 0, 0, 0.6f);
         yield return new WaitForSeconds(1);
         // 14th, Prepare the card object
         GameObject o_Card = t_CardParent.GetChild(0).gameObject;
@@ -911,7 +857,7 @@ public class S_Level : MonoBehaviour
         f_Time = 0f;
         while (f_Time <= 1)
         {
-            c_Panel_Screenshot_Sprite.color = new Color(1, 1, 1, 1f - f_Time);
+            c_FullPanel_Screenshot_Sprite.color = new Color(1, 1, 1, 1f - f_Time);
             c_Card_Sprite.color = new Color(1, 1, 1, 0.4f + f_Time);
             // Calculate the time spent in seconds
             f_Time += Time.deltaTime / 2f;
@@ -930,7 +876,7 @@ public class S_Level : MonoBehaviour
         while (f_Time <= 1)
         {
             c_Card_Sprite.color = new Color(1, 1, 1, 1f - f_Time);
-            c_Panel_Black_Sprite.color = new Color(0, 0, 0, 0.6f - f_Time);
+            c_FullPanel_Black_Sprite.color = new Color(0, 0, 0, 0.6f - f_Time);
             c_Animation_Animator.speed = f_Time;
             // Calculate the time spent in seconds
             f_Time += Time.deltaTime / 1.5f;

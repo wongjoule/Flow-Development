@@ -5,11 +5,12 @@ using UnityEngine;
 public class S_Controller : MonoBehaviour
 {
     // Generic Variables
-    S_Player s_Player;
     Transform t_Camera;
-    S_Camera s_Camera;
     Camera c_Camera;
+    S_Player s_Player;
+    S_Camera s_Camera;
     S_Level s_Level;
+    S_SubMenu s_SubMenu;
 
     // Variables - Move Player
     float f_SpeedModifier = 1f;
@@ -17,6 +18,7 @@ public class S_Controller : MonoBehaviour
 
     // Variables - Joystick
     Transform t_Joystick;
+    Transform t_JoystickBackground;
     Vector3 v_JoystickOffset = new Vector3(0, -1, 0); // Match the settings
     bool b_IsJoystickActivated = false;
 
@@ -31,7 +33,8 @@ public class S_Controller : MonoBehaviour
 
     // Editor Variables - Cheat Mapping
     KeyCode key_Cheat_Completion = KeyCode.Tab;
-    KeyCode key_Cheat_TurboSpeed = KeyCode.Alpha1; // [Shift] + [1]
+    KeyCode key_Cheat_TurboSpeed = KeyCode.Alpha1; // [Alt] + [1]
+    KeyCode key_Cheat_RevealAll = KeyCode.Alpha0; // [Alt] + [0]
 
 
 
@@ -43,8 +46,10 @@ public class S_Controller : MonoBehaviour
         s_Camera = t_Camera.GetComponent<S_Camera>();
         c_Camera = t_Camera.GetComponent<Camera>();
         s_Level = GameObject.Find("LEVELSYSTEM").GetComponent<S_Level>();
+        s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
         // Variables - Joystick
         t_Joystick = GameObject.FindWithTag("Joystick").transform;
+        t_JoystickBackground = t_Joystick.parent.GetChild(1);
     }
 
 
@@ -66,11 +71,11 @@ public class S_Controller : MonoBehaviour
     {
         // Generic Functions
         Controller_Level_ViewMode();
-        Controller_Menu_Button();
+        Controller_MenuBar_Button();
         // Functions that restricted to only the player view
         if (!s_Level.b_IsFullView)
         {
-            Controller_Player_Slow();
+            // Controller_Player_Slow();
             Controller_Skill_Splash();
         }
         // Editor-only Cheat Functions
@@ -91,14 +96,17 @@ public class S_Controller : MonoBehaviour
 
     void LateUpdate()
     {
+        // Calculate the joystick's origin point at the current frame
+        Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
+
         // Have a if-function here - gyro & joystick
         if (true)
         {
-            Controller_Joystick_Control();
+            Controller_Joystick_Control(v_Origin);
             // Return the joystick to its origin position when not in use
             if (!b_IsJoystickActivated)
             {
-                Controller_Joystick_Origin();
+                Controller_Joystick_Origin(v_Origin);
             }
         }
     }
@@ -204,71 +212,63 @@ public class S_Controller : MonoBehaviour
 
 
 
-    void Controller_Joystick_Origin()
+    void Controller_Joystick_Origin(Vector3 v_Origin)
     {
-        // Calculate the joystick's origin point at the current frame
-        Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
         // Return the joystick to its origin position when not in use
         t_Joystick.position = v_Origin;
-
     }
 
 
 
-    void Controller_Joystick_Control()
+    void Controller_Joystick_Control(Vector3 v_Origin)
     {
-        // -------------------- ! MOBILE INPUT ! -------------------- //
+        // -------------------- ! GENERAL FUNCTION ! -------------------- //
 
-        // -------------------- ! EDITOR INPUT ! -------------------- //
+        // Return the joystick's background to its origin position every frame
+        t_JoystickBackground.position = v_Origin;
 
-        // if (Application.isEditor)
-        if (true)
+        // -------------------- ! ALL INPUT ! -------------------- //
+
+        // Activate the joystick if the first tap is within the joystick's detection area
+        if (Input.GetMouseButtonDown(0))
         {
-            // Activate the joystick if the first tap is within the joystick's detection area
-            if (Input.GetMouseButtonDown(0))
+            // 1st, Convert the user input from screen-space to world-space
+            Vector3 v_InputWorld = c_Camera.ScreenToWorldPoint(Input.mousePosition);
+            // 2nd, Check whether the user input is within the joystick's detection area
+            if ((v_InputWorld - v_Origin).sqrMagnitude < 0.1f)
             {
-                // 1st, Convert the user input from screen-space to world-space
-                Vector3 v_InputWorld = c_Camera.ScreenToWorldPoint(Input.mousePosition);
-                // 2nd, Calculate the joystick's origin point at the current frame
-                Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
-                // 3rd, Check whether the user input is within the joystick's detection area
-                if ((v_InputWorld - v_Origin).sqrMagnitude < 0.1f)
-                {
-                    b_IsJoystickActivated = true;
-                }
+                b_IsJoystickActivated = true;
             }
-            // Start to move the player only when the boolean is true and held down
-            else if (Input.GetMouseButton(0) && b_IsJoystickActivated)
+        }
+        // Start to move the player only when the boolean is true and held down
+        else if (Input.GetMouseButton(0) && b_IsJoystickActivated)
+        {
+            // 1st, Convert the user input from screen-space to world-space
+            Vector3 v_InputWorld = c_Camera.ScreenToWorldPoint(Input.mousePosition);
+            // 2nd, Calculate the normalized vector of direction
+            // Note: Vector3's normalized value has been square rooted
+            Vector3 v_Direction = (v_InputWorld - v_Origin).normalized;
+            // 4th, Apply to the player's movement, have to wait for FixedUpdate
+            // Note: Don't add any speed boost value here since it will be done in the Move function
+            v_Movement = v_Direction;
+            // 5th, Check whether the user input is within the joystick's detection area
+            if ((v_InputWorld - v_Origin).sqrMagnitude < .09f)
             {
-                // 1st, Convert the user input from screen-space to world-space
-                Vector3 v_InputWorld = c_Camera.ScreenToWorldPoint(Input.mousePosition);
-                // 2nd, Calculate the joystick's origin point at the current frame
-                Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
-                // 3rd, Calculate the normalized vector of direction
-                // Note: Vector3's normalized value has been square rooted
-                Vector3 v_Direction = (v_InputWorld - v_Origin).normalized;
-                // 4th, Apply to the player's movement, have to wait for FixedUpdate
-                // Note: Don't add any speed boost value here since it will be done in the Move function
-                v_Movement = v_Direction;
-                // 5th, Check whether the user input is within the joystick's detection area
-                if ((v_InputWorld - v_Origin).sqrMagnitude < 0.16f)
-                {
-                    t_Joystick.position = v_InputWorld;
-                }
-                // Lastly, If the touch exceeds, clamp the joystick's visual within that area
-                else
-                {
-                    Vector3 v_Clamped = v_Origin + (v_Direction * 0.4f);
-                    t_Joystick.position = v_Clamped;
-                }
+                t_Joystick.position = v_InputWorld;
             }
-            // Deactivate the joystick when the user's finger is lifted
-            else if (Input.GetMouseButtonUp(0) && b_IsJoystickActivated)
+            // Lastly, If the touch exceeds, clamp the joystick's visual within that area
+            else
             {
-                b_IsJoystickActivated = false;
-                // Reset to its default value
-                v_Movement = Vector2.zero;
+                Vector3 v_Clamped = v_Origin + (v_Direction * .3f);
+                t_Joystick.position = v_Clamped;
             }
+        }
+        // Deactivate the joystick when the user's finger is lifted
+        else if (Input.GetMouseButtonUp(0) && b_IsJoystickActivated)
+        {
+            b_IsJoystickActivated = false;
+            // Reset to its default value
+            v_Movement = Vector2.zero;
         }
     }
 
@@ -289,8 +289,7 @@ public class S_Controller : MonoBehaviour
             // v_Movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         }
 
-        // -------------------- ! LOCAL FUNCTIONS ! -------------------- //
-
+        // -------------------- ! GENERAL FUNCTIONS ! -------------------- //
 
         // Note: Default value is 4
         v_Movement *= 4f * f_SpeedModifier;
@@ -353,7 +352,7 @@ public class S_Controller : MonoBehaviour
 
 
 
-    void Controller_Menu_Button()
+    void Controller_MenuBar_Button()
     {
         // -------------------- ! MOBILE INPUT ! -------------------- //
 
@@ -411,11 +410,18 @@ public class S_Controller : MonoBehaviour
     {
         // ------------- ! Activate Turbo Speed ! ------------- //
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && Input.GetKeyDown(key_Cheat_TurboSpeed))
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(key_Cheat_TurboSpeed))
         {
             f_SpeedModifier = 2.5f;
             // Print a warning log every time a cheat function has been executed
             S_DebugLog.WarningLog("Successfully Executed Cheat - Turbo Speed");
+        }
+
+        // ------------- ! Super Revealer ! ------------- //
+
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(key_Cheat_RevealAll))
+        {
+            StartCoroutine(Coroutine_RevealAll());
         }
 
         // ------------- ! Instant Level Completion ! ------------- //
@@ -440,18 +446,42 @@ public class S_Controller : MonoBehaviour
 
 
 
+    IEnumerator Coroutine_RevealAll()
+    {
+        // Local Variables
+        Transform t_PartsParent = GameObject.Find("PARTS").transform;
+
+        for (int i = 1; i < t_PartsParent.childCount; i++)
+        {
+            Transform t_Current = t_PartsParent.GetChild(i);
+            s_Level.Reveal(i + 1, t_Current, t_Current.position);
+            t_Current.GetComponent<Collider2D>().enabled = false;
+            yield return new WaitForSeconds(.5f);
+        }
+    }
+
+
+
+    // ------------------------------------------------------------ //
+
+
+
     void PressButton(Collider2D hit)
     {
         switch (hit.name)
         {
+            case "Button_Back":
+                S_Menu.BackButton();
+                break;
+
+            case "Button_SubMenu":
+                s_SubMenu.Open();
+                break;
+
             case "Button_Hint":
                 s_Level.Hint();
                 break;
 
-            case "Button_Back":
-
-
-                break;
 
         }
     }
