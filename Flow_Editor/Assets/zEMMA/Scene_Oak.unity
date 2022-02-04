@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 2238702}
   - component: {fileID: 2238701}
   m_Layer: 0
-  m_Name: _0046_47.png
+  m_Name: Part_OakTree_47
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -216,7 +216,7 @@ GameObject:
   - component: {fileID: 5717213}
   - component: {fileID: 5717212}
   m_Layer: 0
-  m_Name: _0044_45.png
+  m_Name: Part_OakTree_45
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 79421120}
   - component: {fileID: 79421119}
   m_Layer: 0
-  m_Name: _0001_2.png
+  m_Name: Part_OakTree_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -380,7 +380,7 @@ GameObject:
   - component: {fileID: 84030296}
   - component: {fileID: 84030295}
   m_Layer: 0
-  m_Name: _0038_39.png
+  m_Name: Part_OakTree_39
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -462,7 +462,7 @@ GameObject:
   - component: {fileID: 105642375}
   - component: {fileID: 105642374}
   m_Layer: 0
-  m_Name: _0043_44.png
+  m_Name: Part_OakTree_44
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -544,7 +544,7 @@ GameObject:
   - component: {fileID: 107387907}
   - component: {fileID: 107387906}
   m_Layer: 0
-  m_Name: _0070_71.png
+  m_Name: Part_OakTree_71
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -626,7 +626,7 @@ GameObject:
   - component: {fileID: 163102054}
   - component: {fileID: 163102053}
   m_Layer: 0
-  m_Name: _0008_9.png
+  m_Name: Part_OakTree_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -708,7 +708,7 @@ GameObject:
   - component: {fileID: 171281287}
   - component: {fileID: 171281286}
   m_Layer: 0
-  m_Name: _0028_29.png
+  m_Name: Part_OakTree_29
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -790,7 +790,7 @@ GameObject:
   - component: {fileID: 183421470}
   - component: {fileID: 183421469}
   m_Layer: 0
-  m_Name: _0006_7.png
+  m_Name: Part_OakTree_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -872,7 +872,7 @@ GameObject:
   - component: {fileID: 198415349}
   - component: {fileID: 198415348}
   m_Layer: 0
-  m_Name: _0051_52.png
+  m_Name: Part_OakTree_52
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -954,7 +954,7 @@ GameObject:
   - component: {fileID: 208869979}
   - component: {fileID: 208869978}
   m_Layer: 0
-  m_Name: _0054_55.png
+  m_Name: Part_OakTree_55
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1036,7 +1036,7 @@ GameObject:
   - component: {fileID: 213903690}
   - component: {fileID: 213903689}
   m_Layer: 0
-  m_Name: _0048_49.png
+  m_Name: Part_OakTree_49
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1118,7 +1118,7 @@ GameObject:
   - component: {fileID: 253452273}
   - component: {fileID: 253452272}
   m_Layer: 0
-  m_Name: _0061_62.png
+  m_Name: Part_OakTree_62
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1200,7 +1200,7 @@ GameObject:
   - component: {fileID: 265758405}
   - component: {fileID: 265758404}
   m_Layer: 0
-  m_Name: _0022_23.png
+  m_Name: Part_OakTree_23
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1282,7 +1282,7 @@ GameObject:
   - component: {fileID: 293388071}
   - component: {fileID: 293388070}
   m_Layer: 0
-  m_Name: _0073_74.png
+  m_Name: Part_OakTree_74
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1364,7 +1364,7 @@ GameObject:
   - component: {fileID: 346451363}
   - component: {fileID: 346451362}
   m_Layer: 0
-  m_Name: _0039_40.png
+  m_Name: Part_OakTree_40
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1446,7 +1446,7 @@ GameObject:
   - component: {fileID: 467808301}
   - component: {fileID: 467808300}
   m_Layer: 0
-  m_Name: _0072_73.png
+  m_Name: Part_OakTree_73
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1528,7 +1528,7 @@ GameObject:
   - component: {fileID: 476486551}
   - component: {fileID: 476486550}
   m_Layer: 0
-  m_Name: _0060_61.png
+  m_Name: Part_OakTree_61
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1610,7 +1610,7 @@ GameObject:
   - component: {fileID: 505204339}
   - component: {fileID: 505204338}
   m_Layer: 0
-  m_Name: _0049_50.png
+  m_Name: Part_OakTree_50
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1692,7 +1692,7 @@ GameObject:
   - component: {fileID: 518915569}
   - component: {fileID: 518915568}
   m_Layer: 0
-  m_Name: _0064_65.png
+  m_Name: Part_OakTree_65
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1774,7 +1774,7 @@ GameObject:
   - component: {fileID: 521241385}
   - component: {fileID: 521241384}
   m_Layer: 0
-  m_Name: _0012_13.png
+  m_Name: Part_OakTree_13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1856,7 +1856,7 @@ GameObject:
   - component: {fileID: 547164638}
   - component: {fileID: 547164637}
   m_Layer: 0
-  m_Name: _0035_36.png
+  m_Name: Part_OakTree_36
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1938,7 +1938,7 @@ GameObject:
   - component: {fileID: 592611712}
   - component: {fileID: 592611711}
   m_Layer: 0
-  m_Name: _0065_66.png
+  m_Name: Part_OakTree_66
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2020,7 +2020,7 @@ GameObject:
   - component: {fileID: 598323729}
   - component: {fileID: 598323728}
   m_Layer: 0
-  m_Name: _0016_17.png
+  m_Name: Part_OakTree_17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2102,7 +2102,7 @@ GameObject:
   - component: {fileID: 691723580}
   - component: {fileID: 691723579}
   m_Layer: 0
-  m_Name: _0071_72.png
+  m_Name: Part_OakTree_72
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2184,7 +2184,7 @@ GameObject:
   - component: {fileID: 699382993}
   - component: {fileID: 699382992}
   m_Layer: 0
-  m_Name: _0017_18.png
+  m_Name: Part_OakTree_18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2266,7 +2266,7 @@ GameObject:
   - component: {fileID: 712971273}
   - component: {fileID: 712971272}
   m_Layer: 0
-  m_Name: _0068_69.png
+  m_Name: Part_OakTree_69
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2348,7 +2348,7 @@ GameObject:
   - component: {fileID: 747379160}
   - component: {fileID: 747379159}
   m_Layer: 0
-  m_Name: _0023_24.png
+  m_Name: Part_OakTree_24
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2430,7 +2430,7 @@ GameObject:
   - component: {fileID: 748170052}
   - component: {fileID: 748170051}
   m_Layer: 0
-  m_Name: _0024_25.png
+  m_Name: Part_OakTree_25
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2512,7 +2512,7 @@ GameObject:
   - component: {fileID: 749030671}
   - component: {fileID: 749030670}
   m_Layer: 0
-  m_Name: _0000_1.png
+  m_Name: Part_OakTree_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2594,7 +2594,7 @@ GameObject:
   - component: {fileID: 764700158}
   - component: {fileID: 764700157}
   m_Layer: 0
-  m_Name: _0033_34.png
+  m_Name: Part_OakTree_34
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2676,7 +2676,7 @@ GameObject:
   - component: {fileID: 874517314}
   - component: {fileID: 874517313}
   m_Layer: 0
-  m_Name: _0050_51.png
+  m_Name: Part_OakTree_51
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2758,7 +2758,7 @@ GameObject:
   - component: {fileID: 874726993}
   - component: {fileID: 874726992}
   m_Layer: 0
-  m_Name: _0003_4.png
+  m_Name: Part_OakTree_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2840,7 +2840,7 @@ GameObject:
   - component: {fileID: 878660850}
   - component: {fileID: 878660849}
   m_Layer: 0
-  m_Name: _0067_68.png
+  m_Name: Part_OakTree_68
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2922,7 +2922,7 @@ GameObject:
   - component: {fileID: 880380044}
   - component: {fileID: 880380043}
   m_Layer: 0
-  m_Name: _0010_11.png
+  m_Name: Part_OakTree_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3004,7 +3004,7 @@ GameObject:
   - component: {fileID: 921952158}
   - component: {fileID: 921952157}
   m_Layer: 0
-  m_Name: _0042_43.png
+  m_Name: Part_OakTree_43
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3086,7 +3086,7 @@ GameObject:
   - component: {fileID: 940534164}
   - component: {fileID: 940534163}
   m_Layer: 0
-  m_Name: _0058_59.png
+  m_Name: Part_OakTree_59
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3250,7 +3250,7 @@ GameObject:
   - component: {fileID: 1073515982}
   - component: {fileID: 1073515981}
   m_Layer: 0
-  m_Name: _0040_41.png
+  m_Name: Part_OakTree_41
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3332,7 +3332,7 @@ GameObject:
   - component: {fileID: 1090838066}
   - component: {fileID: 1090838065}
   m_Layer: 0
-  m_Name: _0045_46.png
+  m_Name: Part_OakTree_46
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3414,7 +3414,7 @@ GameObject:
   - component: {fileID: 1095849521}
   - component: {fileID: 1095849520}
   m_Layer: 0
-  m_Name: _0059_60.png
+  m_Name: Part_OakTree_60
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3496,7 +3496,7 @@ GameObject:
   - component: {fileID: 1100989674}
   - component: {fileID: 1100989673}
   m_Layer: 0
-  m_Name: _0047_48.png
+  m_Name: Part_OakTree_48
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3578,7 +3578,7 @@ GameObject:
   - component: {fileID: 1118774084}
   - component: {fileID: 1118774083}
   m_Layer: 0
-  m_Name: _0019_20.png
+  m_Name: Part_OakTree_20
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3660,7 +3660,7 @@ GameObject:
   - component: {fileID: 1143598504}
   - component: {fileID: 1143598503}
   m_Layer: 0
-  m_Name: _0041_42.png
+  m_Name: Part_OakTree_42
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3742,7 +3742,7 @@ GameObject:
   - component: {fileID: 1161054776}
   - component: {fileID: 1161054775}
   m_Layer: 0
-  m_Name: _0032_33.png
+  m_Name: Part_OakTree_33
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3824,7 +3824,7 @@ GameObject:
   - component: {fileID: 1193498144}
   - component: {fileID: 1193498143}
   m_Layer: 0
-  m_Name: _0066_67.png
+  m_Name: Part_OakTree_67
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3906,7 +3906,7 @@ GameObject:
   - component: {fileID: 1196862696}
   - component: {fileID: 1196862695}
   m_Layer: 0
-  m_Name: _0009_10.png
+  m_Name: Part_OakTree_10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3988,7 +3988,7 @@ GameObject:
   - component: {fileID: 1197296111}
   - component: {fileID: 1197296110}
   m_Layer: 0
-  m_Name: _0011_12.png
+  m_Name: Part_OakTree_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4070,7 +4070,7 @@ GameObject:
   - component: {fileID: 1201569627}
   - component: {fileID: 1201569626}
   m_Layer: 0
-  m_Name: _0075_76.png
+  m_Name: Part_OakTree_76
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4152,7 +4152,7 @@ GameObject:
   - component: {fileID: 1245729371}
   - component: {fileID: 1245729370}
   m_Layer: 0
-  m_Name: _0018_19.png
+  m_Name: Part_OakTree_19
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4234,7 +4234,7 @@ GameObject:
   - component: {fileID: 1249555265}
   - component: {fileID: 1249555264}
   m_Layer: 0
-  m_Name: _0055_56.png
+  m_Name: Part_OakTree_56
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4316,7 +4316,7 @@ GameObject:
   - component: {fileID: 1260517976}
   - component: {fileID: 1260517975}
   m_Layer: 0
-  m_Name: _0062_63.png
+  m_Name: Part_OakTree_63
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4398,7 +4398,7 @@ GameObject:
   - component: {fileID: 1318136334}
   - component: {fileID: 1318136333}
   m_Layer: 0
-  m_Name: _0013_14.png
+  m_Name: Part_OakTree_14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4480,7 +4480,7 @@ GameObject:
   - component: {fileID: 1323191317}
   - component: {fileID: 1323191316}
   m_Layer: 0
-  m_Name: _0074_75.png
+  m_Name: Part_OakTree_75
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4562,7 +4562,7 @@ GameObject:
   - component: {fileID: 1368222748}
   - component: {fileID: 1368222747}
   m_Layer: 0
-  m_Name: _0027_28.png
+  m_Name: Part_OakTree_28
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4644,7 +4644,7 @@ GameObject:
   - component: {fileID: 1376561359}
   - component: {fileID: 1376561358}
   m_Layer: 0
-  m_Name: _0031_32.png
+  m_Name: Part_OakTree_32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4726,7 +4726,7 @@ GameObject:
   - component: {fileID: 1402958055}
   - component: {fileID: 1402958054}
   m_Layer: 0
-  m_Name: _0053_54.png
+  m_Name: Part_OakTree_54
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4808,7 +4808,7 @@ GameObject:
   - component: {fileID: 1414365803}
   - component: {fileID: 1414365802}
   m_Layer: 0
-  m_Name: _0034_35.png
+  m_Name: Part_OakTree_35
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4890,7 +4890,7 @@ GameObject:
   - component: {fileID: 1469750675}
   - component: {fileID: 1469750674}
   m_Layer: 0
-  m_Name: _0004_5.png
+  m_Name: Part_OakTree_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4972,7 +4972,7 @@ GameObject:
   - component: {fileID: 1543727763}
   - component: {fileID: 1543727762}
   m_Layer: 0
-  m_Name: _0002_3.png
+  m_Name: Part_OakTree_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5054,7 +5054,7 @@ GameObject:
   - component: {fileID: 1562887322}
   - component: {fileID: 1562887321}
   m_Layer: 0
-  m_Name: _0007_8.png
+  m_Name: Part_OakTree_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5136,7 +5136,7 @@ GameObject:
   - component: {fileID: 1589565683}
   - component: {fileID: 1589565682}
   m_Layer: 0
-  m_Name: _0030_31.png
+  m_Name: Part_OakTree_31
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5218,7 +5218,7 @@ GameObject:
   - component: {fileID: 1595687512}
   - component: {fileID: 1595687511}
   m_Layer: 0
-  m_Name: _0056_57.png
+  m_Name: Part_OakTree_57
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5300,7 +5300,7 @@ GameObject:
   - component: {fileID: 1645236794}
   - component: {fileID: 1645236793}
   m_Layer: 0
-  m_Name: _0036_37.png
+  m_Name: Part_OakTree_37
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5382,7 +5382,7 @@ GameObject:
   - component: {fileID: 1676620224}
   - component: {fileID: 1676620223}
   m_Layer: 0
-  m_Name: _0057_58.png
+  m_Name: Part_OakTree_58
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5464,7 +5464,7 @@ GameObject:
   - component: {fileID: 1703335061}
   - component: {fileID: 1703335060}
   m_Layer: 0
-  m_Name: _0005_6.png
+  m_Name: Part_OakTree_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5546,7 +5546,7 @@ GameObject:
   - component: {fileID: 1739427733}
   - component: {fileID: 1739427732}
   m_Layer: 0
-  m_Name: _0063_64.png
+  m_Name: Part_OakTree_64
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5628,7 +5628,7 @@ GameObject:
   - component: {fileID: 1811083697}
   - component: {fileID: 1811083696}
   m_Layer: 0
-  m_Name: _0021_22.png
+  m_Name: Part_OakTree_22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5710,7 +5710,7 @@ GameObject:
   - component: {fileID: 1816736363}
   - component: {fileID: 1816736362}
   m_Layer: 0
-  m_Name: _0015_16.png
+  m_Name: Part_OakTree_16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5792,7 +5792,7 @@ GameObject:
   - component: {fileID: 1880233818}
   - component: {fileID: 1880233817}
   m_Layer: 0
-  m_Name: _0026_27.png
+  m_Name: Part_OakTree_27
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5874,7 +5874,7 @@ GameObject:
   - component: {fileID: 1901759279}
   - component: {fileID: 1901759278}
   m_Layer: 0
-  m_Name: _0052_53.png
+  m_Name: Part_OakTree_53
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5956,7 +5956,7 @@ GameObject:
   - component: {fileID: 1928202364}
   - component: {fileID: 1928202363}
   m_Layer: 0
-  m_Name: _0037_38.png
+  m_Name: Part_OakTree_38
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6038,7 +6038,7 @@ GameObject:
   - component: {fileID: 1946705054}
   - component: {fileID: 1946705053}
   m_Layer: 0
-  m_Name: _0025_26.png
+  m_Name: Part_OakTree_26
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6120,7 +6120,7 @@ GameObject:
   - component: {fileID: 1986328112}
   - component: {fileID: 1986328111}
   m_Layer: 0
-  m_Name: _0014_15.png
+  m_Name: Part_OakTree_15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6202,7 +6202,7 @@ GameObject:
   - component: {fileID: 2030277956}
   - component: {fileID: 2030277955}
   m_Layer: 0
-  m_Name: _0029_30.png
+  m_Name: Part_OakTree_30
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6284,7 +6284,7 @@ GameObject:
   - component: {fileID: 2045158998}
   - component: {fileID: 2045158997}
   m_Layer: 0
-  m_Name: _0020_21.png
+  m_Name: Part_OakTree_21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6366,7 +6366,7 @@ GameObject:
   - component: {fileID: 2049139752}
   - component: {fileID: 2049139751}
   m_Layer: 0
-  m_Name: _0069_70.png
+  m_Name: Part_OakTree_70
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
