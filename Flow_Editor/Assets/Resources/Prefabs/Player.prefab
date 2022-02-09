@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 140844046512038528}
   - component: {fileID: 140844046512038535}
   - component: {fileID: 6066522398019272360}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerCenter
   m_TagString: Player
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 140844046685541982}
   - component: {fileID: 140844046685541981}
   - component: {fileID: 140844046685541980}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,9 +130,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.26, y: 0}
+  m_Offset: {x: 0.61, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844046685541970
 Rigidbody2D:
   serializedVersion: 4
@@ -228,7 +228,7 @@ GameObject:
   - component: {fileID: 140844046871932072}
   - component: {fileID: 140844046871932079}
   - component: {fileID: 140844046871932078}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,9 +262,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.27, y: 0}
+  m_Offset: {x: 0.63, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844046871932076
 Rigidbody2D:
   serializedVersion: 4
@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 140844047390645011}
   - component: {fileID: 140844047390645010}
   - component: {fileID: 140844047390645009}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -394,9 +394,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.27, y: 0}
+  m_Offset: {x: 0.62, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844047390645015
 Rigidbody2D:
   serializedVersion: 4
@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 140844047493167317}
   - component: {fileID: 140844047493167316}
   - component: {fileID: 140844047493167307}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,9 +526,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.23, y: 0}
+  m_Offset: {x: 0.6, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844047493167305
 Rigidbody2D:
   serializedVersion: 4
@@ -621,7 +621,7 @@ GameObject:
   - component: {fileID: 140844047936204685}
   - component: {fileID: 140844047936204684}
   - component: {fileID: 140844047936204675}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -744,7 +744,7 @@ GameObject:
   - component: {fileID: 140844048217320445}
   - component: {fileID: 140844048217320444}
   - component: {fileID: 140844048217320435}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -778,9 +778,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.25, y: 0}
+  m_Offset: {x: 0.6, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844048217320433
 Rigidbody2D:
   serializedVersion: 4
@@ -876,7 +876,7 @@ GameObject:
   - component: {fileID: 140844048236595640}
   - component: {fileID: 140844048236595647}
   - component: {fileID: 140844048236595646}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -910,9 +910,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.27, y: 0}
+  m_Offset: {x: 0.63, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844048236595644
 Rigidbody2D:
   serializedVersion: 4
@@ -1008,7 +1008,7 @@ GameObject:
   - component: {fileID: 140844048237630254}
   - component: {fileID: 140844048237630253}
   - component: {fileID: 140844048237630252}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1042,9 +1042,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.27, y: 0}
+  m_Offset: {x: 0.61, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844048237630242
 Rigidbody2D:
   serializedVersion: 4
@@ -1140,7 +1140,7 @@ GameObject:
   - component: {fileID: 140844048313687518}
   - component: {fileID: 140844048313687517}
   - component: {fileID: 140844048313687516}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerBone_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1174,9 +1174,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.26, y: 0}
+  m_Offset: {x: 0.6, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.7
 --- !u!50 &140844048313687506
 Rigidbody2D:
   serializedVersion: 4

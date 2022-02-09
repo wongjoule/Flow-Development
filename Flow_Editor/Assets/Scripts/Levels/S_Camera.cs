@@ -10,8 +10,8 @@ public class S_Camera : MonoBehaviour
     S_Level s_Level;
 
     // Variables - Full Viewing Area
-    float f_PlayerSize = 1.5f;
-    float f_FullSize = 12.0f;
+    float f_PlayerEye = 1.5f;
+    float f_FullEye = 12.0f;
     float f_MoveDuration = 0.5f;
     float f_SizeDuration = 0.5f;
 
@@ -52,14 +52,14 @@ public class S_Camera : MonoBehaviour
             // Move to the center of the world
             transform.position = Vector3.SmoothDamp(transform.position, Vector3.zero, ref v_MoveVelocity, f_MoveDuration);
             // Increase to reach the full orthographic size
-            c_Camera.orthographicSize = Mathf.SmoothDamp(c_Camera.orthographicSize, f_FullSize, ref f_SizeVelocity, f_SizeDuration);
+            c_Camera.orthographicSize = Mathf.SmoothDamp(c_Camera.orthographicSize, f_FullEye, ref f_SizeVelocity, f_SizeDuration);
         }
         else
         {
             // Move to the player current position
             transform.position = Vector3.SmoothDamp(transform.position, t_Player.position, ref v_MoveVelocity, f_MoveDuration);
             // Decrease to reach the player orthographic size
-            c_Camera.orthographicSize = Mathf.SmoothDamp(c_Camera.orthographicSize, f_PlayerSize, ref f_SizeVelocity, f_SizeDuration);
+            c_Camera.orthographicSize = Mathf.SmoothDamp(c_Camera.orthographicSize, f_PlayerEye * S_Booster.mod_PlayerEye, ref f_SizeVelocity, f_SizeDuration);
         }
 
     }

@@ -27,18 +27,30 @@ public class S_Player : MonoBehaviour
         switch (other.tag)
         {
             case "BlackInk":
-                // Black ink absorbs the player's blob and becomes larger
-                other.GetComponent<S_BlackInk>().Absorb();
-                // Disable colliders. Also slowly become black and fade out when being absorbed
-                StartCoroutine(Coroutine_Absorb(other.transform));
-                // Activate Respawn System
-                s_Level.Respawn();
+                if (!S_Booster.mod_Invincible)
+                {
+                    // Black ink absorbs the player's blob and becomes larger
+                    other.GetComponent<S_BlackInk>().Absorb();
+                    // Disable colliders. Also slowly become black and fade out when being absorbed
+                    StartCoroutine(Coroutine_Absorb(other.transform));
+                    // Activate Respawn System
+                    s_Level.Respawn();
+                }
                 break;
 
 
             case "Tunnel":
                 // Disable the collider and pass through the border
                 other.GetComponent<S_Tunnel>().Enter();
+                break;
+
+
+            case "Booster":
+                // Activate the booster
+                // Note: Will destroy the object when the coroutine completes
+                other.GetComponent<S_Booster>().Activate();
+                // Disable its collider component immediately
+                other.enabled = false;
                 break;
 
 

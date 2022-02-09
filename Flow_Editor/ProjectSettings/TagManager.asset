@@ -10,14 +10,15 @@ TagManager:
   - Part
   - Tunnel
   - Joystick
+  - Booster
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - BlackInk
   - 
   - 
   - 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum InkType { Idle, Spreading, Fading, Moving, Malicious }
-
+public enum BoosterType { Offensive, Defensive, Others }
 
 public class S_Level : MonoBehaviour
 {
@@ -86,8 +86,12 @@ public class S_Level : MonoBehaviour
     void Awake()
     {
         // Priorities
-        s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
-        s_SubMenu.Initialize("Level");
+        if (!Application.isEditor)
+        {
+            s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
+            s_SubMenu.Initialize("Level");
+        }
+        S_Booster.ResetModifiers();
         // General Variables
         t_Player = GameObject.FindWithTag("Player").transform;
         t_Camera = GameObject.FindWithTag("MainCamera").transform;
@@ -666,10 +670,12 @@ public class S_Level : MonoBehaviour
         // 1st, Instantiate a new splash object to represent visuals
         GameObject o_Splash = Instantiate(prefab_Splash, v_TapWorld, Quaternion.identity);
         yield return null;
-        // 2nd, Return an array of colliders if it overlapped with the user input
-        Collider2D[] hits = Physics2D.OverlapCircleAll(v_CircleCenter, 0.2f);
+        // 2nd, Scale
+        o_Splash.transform.localScale = Vector3.one * S_Booster.mod_SplashArea;
+        // 3rd, Return an array of colliders if it overlapped with the user input
+        Collider2D[] hits = Physics2D.OverlapCircleAll(v_CircleCenter, 0.2f * S_Booster.mod_SplashArea);
         S_DebugLog.TestingLog("Total hits = ", hits.Length);
-        // 3rd, Iterate through all of them and find the objects tagged as "Part"
+        // 4th, Iterate through all of them and find the objects tagged as "Part"
         foreach (Collider2D hit in hits)
         {
             if (hit.tag == "Part")
@@ -683,7 +689,7 @@ public class S_Level : MonoBehaviour
                 // Disable its collider component immediately
                 hit.enabled = false;
                 // Wait for the next 0.2 seconds before looping over
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(.2f);
             }
         }
         // Lastly, Wait for the splash animation to complete and then destroy it

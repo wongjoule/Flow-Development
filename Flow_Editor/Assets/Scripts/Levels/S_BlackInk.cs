@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class S_BlackInk : MonoBehaviour
 {
-    // Generic Variables
+    // General Variables
     [HideInInspector] public InkType Type;
     [HideInInspector] public bool b_IsAppeared = false;
     Animator c_Animator;
     S_Level s_Level;
+
+    // Variables - Absorb
+    float f_InkScale;
 
     // Variables - Moving Ink
     Vector3 v_Lateral_Target = Vector3.zero;
@@ -23,6 +26,21 @@ public class S_BlackInk : MonoBehaviour
 
 
 
+    void Start()
+    {
+        f_InkScale = transform.localScale.x;
+    }
+
+
+
+    void Update()
+    {
+        float f_Scale = Mathf.SmoothStep(transform.localScale.x, f_InkScale * S_Booster.mod_InkSize, .1f);
+        transform.localScale = new Vector3(f_Scale, f_Scale, f_Scale);
+    }
+
+
+
     // ------------------------------------------------------------ //
 
 
@@ -30,7 +48,7 @@ public class S_BlackInk : MonoBehaviour
     // Used in [S_Player]
     public void Absorb()
     {
-        StartCoroutine(Coroutine_Absorb());
+        f_InkScale += .025f;
     }
 
 
@@ -73,32 +91,6 @@ public class S_BlackInk : MonoBehaviour
 
 
     // ------------------------------------------------------------ //
-
-
-
-    IEnumerator Coroutine_Absorb()
-    {
-        // Local Variables
-        float f_Time = 0f;
-        float f_Origin = transform.localScale.x;
-        float f_Target = f_Origin + 0.025f;
-
-        // Note: This will be a 3 seconds loop and also it acts like Update()
-        while (f_Time <= 3)
-        {
-            // Note: Define the factor at the 't' parameter
-            float f_Scale = Mathf.SmoothStep(f_Origin, f_Target, f_Time / 3f);
-            // Apply to this Black Ink object's scale
-            transform.localScale = new Vector3(f_Scale, f_Scale, f_Scale);
-            // Calculate the time spent in seconds
-            f_Time += Time.deltaTime;
-            // Wait for the next frame before looping over
-            yield return null;
-        }
-
-        // Just to round the numbers
-        transform.localScale = new Vector3(f_Target, f_Target, f_Target);
-    }
 
 
 
@@ -296,7 +288,7 @@ public class S_BlackInk : MonoBehaviour
                 // Note: This will be a never-ending loop and also it acts like Update()
                 while (true)
                 {
-                    transform.position = Vector3.SmoothDamp(transform.position, v_Lateral_Target, ref v_Velocity, 3);
+                    transform.position = Vector3.SmoothDamp(transform.position, v_Lateral_Target, ref v_Velocity, 3 / S_Booster.mod_InkSpeed);
                     // Wait for the next frame before looping over
                     yield return null;
                 }
@@ -332,7 +324,7 @@ public class S_BlackInk : MonoBehaviour
                 // Note: This will be a never-ending loop and also it acts like Update()
                 while (true)
                 {
-                    transform.RotateAround(v_RandomPivot, Vector3.forward, 20 * Time.deltaTime);
+                    transform.RotateAround(v_RandomPivot, Vector3.forward, 20 * Time.deltaTime * S_Booster.mod_InkSpeed);
                     // Wait for the next frame before looping over
                     yield return null;
                 }

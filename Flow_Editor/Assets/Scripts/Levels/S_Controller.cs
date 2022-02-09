@@ -13,7 +13,6 @@ public class S_Controller : MonoBehaviour
     S_SubMenu s_SubMenu;
 
     // Variables - Move Player
-    float f_SpeedModifier = 1f;
     Vector2 v_Movement = Vector2.zero;
 
     // Variables - Joystick
@@ -40,13 +39,17 @@ public class S_Controller : MonoBehaviour
 
     void Awake()
     {
+        // Priorities
+        if (!Application.isEditor)
+        {
+            s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
+        }
         // Generic Variables
         s_Player = GameObject.FindWithTag("Player").GetComponent<S_Player>();
         t_Camera = GameObject.FindWithTag("MainCamera").transform;
         s_Camera = t_Camera.GetComponent<S_Camera>();
         c_Camera = t_Camera.GetComponent<Camera>();
         s_Level = GameObject.Find("LEVELSYSTEM").GetComponent<S_Level>();
-        s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
         // Variables - Joystick
         t_Joystick = GameObject.FindWithTag("Joystick").transform;
         t_JoystickBackground = t_Joystick.parent.GetChild(1);
@@ -292,7 +295,7 @@ public class S_Controller : MonoBehaviour
         // -------------------- ! GENERAL FUNCTIONS ! -------------------- //
 
         // Note: Default value is 4
-        v_Movement *= 4f * f_SpeedModifier;
+        v_Movement *= 4f * S_Booster.mod_MoveSpeed;
         // Use the FixedUpdate method of this script to move the player
         s_Player.Move(v_Movement);
     }
@@ -412,7 +415,7 @@ public class S_Controller : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(key_Cheat_TurboSpeed))
         {
-            f_SpeedModifier = 2.5f;
+            S_Booster.mod_MoveSpeed = 2.5f;
             // Print a warning log every time a cheat function has been executed
             S_DebugLog.WarningLog("Successfully Executed Cheat - Turbo Speed");
         }
