@@ -17,7 +17,7 @@ public class S_Player : MonoBehaviour
         c_SpriteRenderer = GetComponentInParent<SpriteRenderer>();
         c_Rigidbody = GetComponent<Rigidbody2D>();
         f_Drag = c_Rigidbody.drag;
-        s_Level = GameObject.Find("LEVELSYSTEM").GetComponent<S_Level>();
+        s_Level = GameObject.Find("SYSTEMS").GetComponent<S_Level>();
     }
 
 

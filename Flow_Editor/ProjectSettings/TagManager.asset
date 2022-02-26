@@ -54,6 +54,9 @@ TagManager:
   - name: Border
     uniqueID: 3950202889
     locked: 0
+  - name: Booster
+    uniqueID: 1829843893
+    locked: 0
   - name: BlackInk
     uniqueID: 3493634279
     locked: 0

@@ -1,34 +1,38 @@
-// S_Menu will contain all functions related to S_Controller, S_Camera 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+// S_Menu will contain all functions related to S_Controller, S_Camera 
+
 public class S_Menu : MonoBehaviour
 {
     // General Variables
-    static string text_SceneType;
-    float f_LoadSceneInterval;
+    static string MenuType;
+    float f_OpeningInterval;
     Camera c_Camera;
     S_SubMenu s_SubMenu;
 
-    // Variables - LevelTitle Bars
-    TextMeshPro tmp_Level_Index;
-    TextMeshPro tmp_Level_Name;
-
     // Variables - Panels
     Transform t_PanelRoot;
-    Transform t_Panel_A;
-    Transform t_Panel_B;
-    Transform t_Panel_C;
+    Transform t_Panel_A, t_Panel_B, t_Panel_C;
+    TextMeshPro tmp_PanelIndex_A, tmp_PanelIndex_B, tmp_PanelIndex_C;
 
     // Variables - Panel Bars
     Transform t_Panel_Line;
     TextMeshPro tmp_Panel_Stories;
     TextMeshPro tmp_Panel_Arts;
     TextMeshPro tmp_Panel_Events;
+
+    // Variables - Level Title Bars
+    TextMeshPro tmp_Level_Index;
+    TextMeshPro tmp_Level_Name;
+
+    // Variables - Star Bars
+    int[] i_StarBars;
+    Transform t_StarBarsParent;
+    SpriteRenderer[] c_Stars = new SpriteRenderer[3];
 
     // Variables - Snap Control
     bool b_SnapController = false;
@@ -49,7 +53,7 @@ public class S_Menu : MonoBehaviour
     Vector2 v_EndedTouch;
 
     // Variables - Resources Path
-    [HideInInspector] public GameObject prefab_FullPanel; // A full-screen panel
+    GameObject prefab_FullPanel; // A full-screen panel
 
 
 
@@ -60,12 +64,19 @@ public class S_Menu : MonoBehaviour
         s_SubMenu.Initialize("Menu");
         // General Variables
         c_Camera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
-        f_LoadSceneInterval = Time.time + .5f;
-        // Variables - SubTitle Bars
+        f_OpeningInterval = Time.time + .5f;
+        // Variables - Level Title Bars
         if (GameObject.Find("LEVELTITLEBARS") != null)
         {
             tmp_Level_Index = GameObject.Find("Text_LevelTitle_Level").GetComponent<TextMeshPro>();
             tmp_Level_Name = GameObject.Find("Text_LevelTitle_LevelName").GetComponent<TextMeshPro>();
+        }
+        // Variables - Star Bars
+        if (GameObject.Find("STARBARS") != null)
+        {
+            t_StarBarsParent = GameObject.Find("STARBARS").transform;
+            for (int i = 0; i < 3; i++)
+                c_Stars[i] = t_StarBarsParent.GetChild(i).GetComponent<SpriteRenderer>();
         }
         // Variables - Panel Bars
         // Note: Panel_Line variable will only be used when the scene got three panels
@@ -84,9 +95,10 @@ public class S_Menu : MonoBehaviour
 
     void Start()
     {
-        Initialize_Panel();
         Initialize_AspectRatio();
-        StartCoroutine(Coroutine_SceneTransition());
+        Initialize_Panels();
+        Initialize_Levels();
+        StartCoroutine(Coroutine_SceneTransition("Opening", null));
     }
 
 
@@ -141,21 +153,13 @@ public class S_Menu : MonoBehaviour
             if (Time.time > f_SnapInterval)
             {
                 if (touch.deltaPosition.y > 70)
-                {
                     Snap(1, "Vertical");
-                }
                 else if (touch.deltaPosition.y < -70)
-                {
                     Snap(-1, "Vertical");
-                }
                 else if (touch.deltaPosition.x > 40)
-                {
                     Snap(-1, "Horizontal");
-                }
                 else if (touch.deltaPosition.x < -40)
-                {
                     Snap(1, "Horizontal");
-                }
             }
         }
 
@@ -166,21 +170,13 @@ public class S_Menu : MonoBehaviour
             if (Time.time > f_SnapInterval)
             {
                 if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
                     Snap(-1, "Vertical");
-                }
                 else if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
                     Snap(1, "Vertical");
-                }
                 else if (Input.GetKeyDown(KeyCode.RightArrow))
-                {
                     Snap(1, "Horizontal");
-                }
                 else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                {
                     Snap(-1, "Horizontal");
-                }
             }
         }
     }
@@ -200,31 +196,39 @@ public class S_Menu : MonoBehaviour
                     i_PanelIndex_Vertical_A += value;
                     // Then, Limit all Snap Index within the available content
                     i_PanelIndex_Vertical_A = Mathf.Clamp(i_PanelIndex_Vertical_A, 1, t_Panel_A.childCount);
+                    // Then, Change the Index Letter
+                    tmp_PanelIndex_A.text = IndexLetter(i_PanelIndex_Vertical_A) + ".";
                     // Lastly, Calculate the target values
                     i_Target_A = (i_PanelIndex_Vertical_A * 20) - 20;
                     break;
-
                 case 2:
                     i_PanelIndex_Vertical_B += value;
                     // Then, Limit all Snap Index within the available content
                     i_PanelIndex_Vertical_B = Mathf.Clamp(i_PanelIndex_Vertical_B, 1, t_Panel_B.childCount);
+                    // Then, Change the Index Letter
+                    tmp_PanelIndex_B.text = IndexLetter(i_PanelIndex_Vertical_B) + ".";
                     // Lastly, Calculate the target values
                     i_Target_B = (i_PanelIndex_Vertical_B * 20) - 20;
                     break;
-
                 case 3:
                     i_PanelIndex_Vertical_C += value;
                     // Then, Limit all Snap Index within the available content
                     i_PanelIndex_Vertical_C = Mathf.Clamp(i_PanelIndex_Vertical_C, 1, t_Panel_C.childCount);
+                    // Then, Change the Index Letter
+                    tmp_PanelIndex_C.text = IndexLetter(i_PanelIndex_Vertical_C) + ".";
                     // Lastly, Calculate the target values
                     i_Target_C = (i_PanelIndex_Vertical_C * 20) - 20;
                     break;
             }
-            // Change the level's title only in the chapter's level selection
+            // Variables - Level Title Bars
             if (tmp_Level_Index != null)
-            {
                 tmp_Level_Index.text = "Level " + i_PanelIndex_Vertical_A + "  -";
-            }
+            // Variables - Star Bars
+            if (t_StarBarsParent != null)
+                for (int i = 1; i <= 3; i++)
+                    if (i_StarBars[i_PanelIndex_Vertical_A - 1] >= i)
+                        c_Stars[i - 1].color = Color.white;
+
         }
         else if (type == "Horizontal")
         {
@@ -276,7 +280,6 @@ public class S_Menu : MonoBehaviour
                     // Set the interval time limit for button detection
                     f_TapInterval = Time.time + 0.66f;
                     break;
-
                 case TouchPhase.Ended:
                     v_EndedTouch = touch.position;
                     // Note: The distance value have to be squared
@@ -292,7 +295,9 @@ public class S_Menu : MonoBehaviour
                         // Lastly, Check if a collider is hit
                         if (hit != null)
                         {
-                            PressButton(hit);
+                            f_SnapInterval = Time.time + .5f;
+                            StartCoroutine(Coroutine_SceneTransition("Ending", hit.name));
+                            S_Audio.Play("SFX_Test");
                         }
                     }
                     break;
@@ -312,7 +317,9 @@ public class S_Menu : MonoBehaviour
                 // Lastly, Check if a collider is hit
                 if (hit != null)
                 {
-                    PressButton(hit);
+                    f_SnapInterval = Time.time + .5f;
+                    StartCoroutine(Coroutine_SceneTransition("Ending", hit.name));
+                    S_Audio.Play("SFX_Test");
                 }
             }
         }
@@ -326,29 +333,20 @@ public class S_Menu : MonoBehaviour
 
     bool IsIntervalFinished()
     {
-        if (Time.time > f_LoadSceneInterval &&
-        Time.time > f_SnapInterval)
-        {
+        if (Time.time > f_OpeningInterval && Time.time > f_SnapInterval)
             return true;
-        }
         else
-        {
             return false;
-        }
     }
 
 
 
     bool IsThreePanels()
     {
-        if (t_PanelRoot.childCount == 3)
-        {
+        if (t_PanelRoot.childCount == 6)
             return true;
-        }
         else
-        {
             return false;
-        }
     }
 
 
@@ -357,32 +355,75 @@ public class S_Menu : MonoBehaviour
 
 
 
-    IEnumerator Coroutine_SceneTransition()
+    IEnumerator Coroutine_SceneTransition(string Phase, string Button)
     {
-        // Create a full-screen panel when loading a new scene
-        GameObject o_FullPanel = Instantiate(prefab_FullPanel);
-        SpriteRenderer c_FullPanel_Sprite = o_FullPanel.GetComponent<SpriteRenderer>();
-        c_FullPanel_Sprite.sortingLayerName = "Transition";
-        yield return null;
-        // Local Variables
-        float f_Alpha = 1f;
-        // Fade out that full-screen panel's sprite
-        // Note: This will be a 1 second loop and also it acts like Update()
-        while (f_Alpha > 0)
+        if (Button != "Button_SubMenu" && Button != "Button_Panel_Stories" && Button != "Button_Panel_Arts" && Button != "Button_Panel_Events")
         {
-            c_FullPanel_Sprite.color = new Color(1, 1, 1, f_Alpha);
-            // Slowly reduce the alpha value every frame
-            f_Alpha -= Time.deltaTime;
-            // Wait for the next frame before looping over
-            yield return null;
+            // Create a brand new full-screen panel
+            GameObject o_FullPanel = Instantiate(prefab_FullPanel);
+            SpriteRenderer c_FullPanel_Sprite = o_FullPanel.GetComponent<SpriteRenderer>();
+            c_FullPanel_Sprite.sortingLayerName = "Transition";
+            // Local Variables
+            float f_Factor = 0f;
+            // Fade out that full-screen panel's sprite
+            // Note: This will be a 0.5 second loop and also it acts like Update()
+            while (f_Factor < 1)
+            {
+                switch (Phase)
+                {
+                    case "Opening":
+                        c_FullPanel_Sprite.color = new Color(.96f, .96f, .96f, Mathf.SmoothStep(1, 0, f_Factor));
+                        break;
+                    case "Ending":
+                        c_FullPanel_Sprite.color = new Color(.96f, .96f, .96f, Mathf.SmoothStep(0, 1, f_Factor));
+                        break;
+                }
+                // Wait for the next frame before looping over
+                f_Factor += Time.deltaTime * 2f;
+                yield return null;
+            }
         }
-        // Lastly, Destroy that useless full-screen panel
-        Destroy(o_FullPanel);
+        PressButton(Button);
     }
 
 
 
-    void Initialize_Panel()
+    // ------------------------------------------------------------ //
+
+
+
+    string IndexLetter(int value)
+    {
+        switch (value)
+        {
+            case 1: return "i";
+            case 2: return "ii";
+            case 3: return "iii";
+            case 4: return "iv";
+            case 5: return "v";
+            case 6: return "vi";
+            case 7: return "vii";
+            case 8: return "viii";
+            case 9: return "ix";
+            case 10: return "x";
+            default: return "-";
+        }
+    }
+
+
+
+    void Initialize_Levels()
+    {
+        if (MenuType == "LEVEL" || MenuType == "CARD")
+        {
+            string SceneName = SceneManager.GetActiveScene().name;
+            i_StarBars = S_Data.Instance.GetScore(SceneName);
+        }
+    }
+
+
+
+    void Initialize_Panels()
     {
         // Try to locate the gameobject named PANELS
         if (GameObject.Find("PANELS") != null)
@@ -391,31 +432,28 @@ public class S_Menu : MonoBehaviour
             t_PanelRoot = GameObject.Find("PANELS").transform;
             // Note: If gameobject PANELS is detected, it will always have at least one panel
             t_Panel_A = t_PanelRoot.GetChild(0);
+            tmp_PanelIndex_A = GameObject.Find("Text_PanelIndex_A").GetComponent<TextMeshPro>();
             // Get the offset value of panel A in the editor
             float f_Offset_A = t_Panel_A.GetChild(0).localPosition.y;
             // Set the spacing for each element in this panel
             for (int i = 0; i < t_Panel_A.childCount; i++)
-            {
                 t_Panel_A.GetChild(i).localPosition = new Vector3(0, (i * -20) + f_Offset_A, 0);
-            }
             // Only access to the other two panels if they are detected
             if (IsThreePanels())
             {
                 // Assign the other two values to the local variables
                 t_Panel_B = t_PanelRoot.GetChild(1);
                 t_Panel_C = t_PanelRoot.GetChild(2);
+                tmp_PanelIndex_B = GameObject.Find("Text_PanelIndex_B").GetComponent<TextMeshPro>();
+                tmp_PanelIndex_C = GameObject.Find("Text_PanelIndex_C").GetComponent<TextMeshPro>();
                 // Get the offset value of panel B and C in the editor
                 float f_Offset_B = t_Panel_B.GetChild(0).localPosition.y;
                 float f_Offset_C = t_Panel_C.GetChild(0).localPosition.y;
                 // Set the spacing of each element in each panel
                 for (int i = 0; i < t_Panel_B.childCount; i++)
-                {
                     t_Panel_B.GetChild(i).localPosition = new Vector3(0, (i * -20) + f_Offset_B, 0);
-                }
                 for (int i = 0; i < t_Panel_C.childCount; i++)
-                {
                     t_Panel_C.GetChild(i).localPosition = new Vector3(0, (i * -20) + f_Offset_C, 0);
-                }
                 // Set the panel line's position so it can be moved when the scene is loaded
                 t_Panel_Line.position = new Vector3(-5f, -8.7f, 0);
             }
@@ -424,9 +462,7 @@ public class S_Menu : MonoBehaviour
             b_SnapController = true;
         }
         else
-        {
             b_SnapController = false;
-        }
     }
 
 
@@ -459,118 +495,101 @@ public class S_Menu : MonoBehaviour
 
 
 
+    // ------------------------------------------------------------ //
+
+
+
     public static void BackButton()
     {
-        // Note: 'case' records what the current scene is
-        // Note: You have to think about what the previous scene was
-        // Note: Take note that you have to specify the scene type as well
-        switch (text_SceneType)
+        // Note: Home Page has no return button, no need to specify the scene type
+        switch (MenuType)
         {
             case "CATEGORY":
-                // Home Page has no return button, no need to specify the scene type
                 SceneManager.LoadScene("MENU_HOME");
                 break;
-
             case "LEVEL_ROOT":
             case "CARD_ROOT":
             case "ARTIST_ROOT":
+                MenuType = "CATEGORY";
                 SceneManager.LoadScene("MENU_CATEGORY");
-                text_SceneType = "CATEGORY";
                 break;
-
-            case "LEVEL_CHAPTER":
+            case "LEVEL":
+                MenuType = "LEVEL_ROOT";
                 SceneManager.LoadScene("MENU_LEVELS");
-                text_SceneType = "LEVEL_ROOT";
                 break;
-
-            case "ARTIST_PROFILE":
+            case "CARD":
+                MenuType = "CARD_ROOT";
+                SceneManager.LoadScene("MENU_CARDS");
+                break;
+            case "ARTIST":
+                MenuType = "ARTIST_ROOT";
                 SceneManager.LoadScene("MENU_ARTISTS");
-                text_SceneType = "ARTIST_ROOT";
                 break;
-
-            case "GAMEPLAY_CH1":
+            case "LEVEL_CH1": // The playable levels
+                MenuType = "LEVEL";
                 S_SceneSelector.Levels(1, 1, 0, 0);
-                text_SceneType = "LEVEL_CHAPTER";
                 break;
         }
-
     }
 
 
 
-    void PressButton(Collider2D hit)
+    void PressButton(string Button)
     {
         // Note: When defining the scene type, just reference the line above
-        switch (hit.name)
+        switch (Button)
         {
-            // -------------------- ! ALL ! -------------------- //
-
             case "Button_Back":
                 S_Menu.BackButton();
                 break;
-
             case "Button_SubMenu":
                 s_SubMenu.Open();
                 break;
-
-            // -------------------- ! PANELBARS ! -------------------- //
-
             case "Button_Panel_Stories":
                 i_PanelIndex_Horizontal = 1;
                 Snap(0, "Horizontal"); // Just to process the snap function
                 break;
-
             case "Button_Panel_Arts":
                 i_PanelIndex_Horizontal = 2;
                 Snap(0, "Horizontal"); // Just to process the snap function
                 break;
-
             case "Button_Panel_Events":
                 i_PanelIndex_Horizontal = 3;
                 Snap(0, "Horizontal"); // Just to process the snap function
                 break;
 
-            // -------------------- ! MENU_HOME ! -------------------- //
+            // -------------------- | SCENES | -------------------- //
 
             case "Button_Explore":
+                MenuType = "CATEGORY";
                 SceneManager.LoadScene("MENU_CATEGORY");
-                text_SceneType = "CATEGORY";
                 break;
-
-            // -------------------- ! MENU_CATEGORY ! -------------------- //
-
             case "Button_Category_Stories":
+                MenuType = "LEVEL_ROOT";
                 SceneManager.LoadScene("MENU_LEVELS");
-                text_SceneType = "LEVEL_ROOT";
                 break;
-
             case "Button_Category_Cards":
+                MenuType = "CARD_ROOT";
                 SceneManager.LoadScene("MENU_CARDS");
-                text_SceneType = "CARD_ROOT";
                 break;
-
             case "Button_Category_Artists":
+                MenuType = "ARTIST_ROOT";
                 SceneManager.LoadScene("MENU_ARTISTS");
-                text_SceneType = "ARTIST_ROOT";
                 break;
 
-            // -------------------- ! MENU_LEVELS ! -------------------- //
+
 
             case "Button_Levels":
+                MenuType = "LEVEL";
                 S_SceneSelector.Levels(i_PanelIndex_Horizontal, i_PanelIndex_Vertical_A,
                 i_PanelIndex_Vertical_B, i_PanelIndex_Vertical_C);
-                text_SceneType = "LEVEL_CHAPTER";
                 break;
-
-
-            // -------------------- ! MENU_LEVELS_STORIES ! -------------------- //
-
-            case "Button_Levels_Stories_CH1":
+            case "Button_Levels_Stories_CH1": // Maybe can have a loop to iterate through Chapters one by one
+                MenuType = "LEVEL_CH1";
                 S_SceneSelector.Levels_Stories(1, i_PanelIndex_Vertical_A);
-                text_SceneType = "GAMEPLAY_CH1";
                 break;
 
-            // -------------------- ! MENU_CARDS ! -------------------- //
+
 
             case "Button_Cards":
 
@@ -578,11 +597,9 @@ public class S_Menu : MonoBehaviour
 
 
 
-            // -------------------- ! MENU_ARTISTS ! -------------------- //
-
             case "Button_Artists":
+                MenuType = "ARTIST";
                 S_SceneSelector.Artists(i_PanelIndex_Vertical_A);
-                text_SceneType = "ARTIST_PROFILE";
                 break;
 
 

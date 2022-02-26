@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public enum InkType { Idle, Spreading, Fading, Moving, Malicious }
 public enum BoosterType { Offensive, Defensive, Others }
 
 public class S_Level : MonoBehaviour
 {
-    // Inspector Variables for level settings
     [Header("Black Ink Pools")]
     [Range(0, 9)] public int i_IdleInkPool = 0;
     [Range(0, 9)] public int i_SpreadingInkPool = 0;
@@ -24,21 +25,25 @@ public class S_Level : MonoBehaviour
     // Generic Variables
     Transform t_Player;
     Transform t_Camera;
+    Camera c_Camera;
     S_Camera s_Camera;
     S_Controller s_Controller;
     S_SubMenu s_SubMenu;
 
-    // Variables - View Mode
-    [HideInInspector] public bool b_IsFullView = false; // Unified management of the control of the Full View
+    // Variables - View Modes
+    [HideInInspector] public bool b_FullView = false; // Unified management of the control of the Full View
     [HideInInspector] public List<SpriteRenderer> list_ViewModeSprite = new List<SpriteRenderer>();
     float f_ViewModeAlpha = 1f;
-    SpriteRenderer c_BackgroundPauseSprite; // 'Pause and Observe' background sprite that fades in when zoomed out
-    SpriteRenderer c_BackgroundShadowSprite;
+    SpriteRenderer c_BackgroundPause, c_BackgroundShadow; // 'Pause and Observe' background sprite that fades in when zoomed out
 
-    // Variables - Splash
+    // Variables - Joysticks
+    Transform t_JoystickParent;
+    SpriteRenderer c_JoystickKnob, c_JoystickBase;
+
+    // Variables - Splashes
     float f_SplashCooldown = 0f;
 
-    // Variables - Black Ink
+    // Variables - Black Inks
     Transform t_BlackInkParent;
     int i_TotalInkPool = 0;
     int i_TotalInkSlot = 0;
@@ -48,31 +53,35 @@ public class S_Level : MonoBehaviour
     // Variables - Parts
     Transform t_PartsParent;
 
-    // Variables - Revealer
+    // Variables - Revealers
     Transform t_RevealerParent;
     int i_CurrentRevealer = 0;
 
-    // Variables - Respawn
+    // Variables - Respawns
     Transform t_RespawnParent;
     Transform t_PlayerParent;
 
-    // Variables - Progress
-    int i_Progress = 0;
-    int i_CompleteProgress = 0;
-
-    // Variables - Hint
+    // Variables - Hints
     Transform t_HintParent;
     SpriteRenderer c_HintSprite;
 
-    // Variables - Menu Bar
-    Transform t_MenuBarParent;
-    int i_Life = 3; // Note: It need to reach '-1' to count as death
+    // Variables - Menu Bars (Indicators - Lives, Progress, Hint)
+    Transform t_MenuBarParent, t_ProgressBar, t_HintButton;
+    TextMeshPro tmp_Lives;
+    bool[] b_BoosterIcons; // Default = All false
+    SpriteRenderer[] c_BoosterIcons;
+    int i_Lives = 3; // Note: Your third death = game over
+    int i_Progress = 0;
+    int i_CompleteProgress = 0;
 
-    // Variables - Animation
+    // Variables - Animations
     Transform t_AnimationParent;
 
-    // Variables - Card
+    // Variables - Cards
     Transform t_CardParent;
+
+    // Variables - Summaries
+    Transform t_SummaryParent;
 
     // Variables - Resources Path
     [HideInInspector] public GameObject prefab_Player;
@@ -86,45 +95,54 @@ public class S_Level : MonoBehaviour
     void Awake()
     {
         // Priorities
-        if (!Application.isEditor)
+        // if (!Application.isEditor)
         {
             s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
             s_SubMenu.Initialize("Level");
         }
-        S_Booster.ResetModifiers();
+        S_Booster.ResetToDefault();
         // General Variables
         t_Player = GameObject.FindWithTag("Player").transform;
         t_Camera = GameObject.FindWithTag("MainCamera").transform;
+        c_Camera = t_Camera.GetComponent<Camera>();
         s_Camera = t_Camera.GetComponent<S_Camera>();
         s_Controller = GameObject.Find("CONTROLLERS").GetComponent<S_Controller>();
-        // Variables - View Mode
-        c_BackgroundPauseSprite = GameObject.Find("Background_Pause").GetComponent<SpriteRenderer>();
-        c_BackgroundShadowSprite = GameObject.Find("Background_Shadow").GetComponent<SpriteRenderer>();
-        // Variables - Black Ink
+        // Variables - View Modes
+        c_BackgroundPause = GameObject.Find("Background_Pause").GetComponent<SpriteRenderer>();
+        c_BackgroundShadow = GameObject.Find("Background_Shadow").GetComponent<SpriteRenderer>();
+        // Variables - Joysticks
+        t_JoystickParent = GameObject.Find("JOYSTICKS").transform;
+        c_JoystickKnob = t_JoystickParent.Find("Joystick_Knob").GetComponent<SpriteRenderer>();
+        c_JoystickBase = t_JoystickParent.Find("Joystick_Base").GetComponent<SpriteRenderer>();
+        // Variables - Black Inks
         t_BlackInkParent = GameObject.Find("BLACKINKS").transform;
         // Variables - Parts
         t_PartsParent = GameObject.Find("PARTS").transform;
-        // Variables - Revealer
+        // Variables - Revealers
         t_RevealerParent = GameObject.Find("REVEALERS").transform;
-        // Variables - Respawn
+        // Variables - Respawns
         t_RespawnParent = GameObject.Find("RESPAWNS").transform;
         t_PlayerParent = GameObject.Find("PLAYERS").transform;
-        // Variables - Hint
+        // Variables - Hints
         t_HintParent = GameObject.Find("HINTS").transform;
         c_HintSprite = t_HintParent.GetComponentInChildren<SpriteRenderer>();
-        // Variables - Menu Bar
+        // Variables - Menu Bars
         t_MenuBarParent = GameObject.Find("MENUBARS").transform;
-        // Variables - Animation
+        tmp_Lives = t_MenuBarParent.Find("LIVES/Text_Lives").GetComponent<TextMeshPro>();
+        t_ProgressBar = t_MenuBarParent.Find("PROGRESSBARS/IMG_ProgressBar");
+        t_HintButton = t_MenuBarParent.Find("Button_Hint");
+        // Variables - Animations
         t_AnimationParent = GameObject.Find("ANIMATIONS").transform;
-        // Variables - Card
+        // Variables - Cards
         t_CardParent = GameObject.Find("CARDS").transform;
+        // Variables - Summaries
+        t_SummaryParent = GameObject.Find("SUMMARIES").transform;
         // Variables - Resources Path
         prefab_Player = Resources.Load<GameObject>("Prefabs/Player");
         prefab_BlackInk = Resources.Load<GameObject>("Prefabs/BlackInk");
         prefab_Revealer = Resources.Load<GameObject>("Prefabs/Revealer");
         prefab_FullPanel = Resources.Load<GameObject>("Prefabs/FullPanel");
         prefab_Splash = Resources.Load<GameObject>("Prefabs/Splash");
-
     }
 
 
@@ -136,14 +154,15 @@ public class S_Level : MonoBehaviour
         // Else, Throw an error log and immediately stop the initialization process
         if (Initialize_Prerequisite())
         {
-            Initialize_BlackInk();
+            Initialize_BlackInks();
             Initialize_Parts();
-            Initialize_Revealer();
-            Initialize_Respawn();
-            Initialize_Progression();
-            Initialize_Hint();
-            Initialize_Animation();
-            Initialize_Card();
+            Initialize_Revealers();
+            Initialize_Respawns();
+            Initialize_MenuBars();
+            Initialize_Hints();
+            Initialize_Animations();
+            Initialize_Cards();
+            Initialize_Summaries();
         }
         else
         {
@@ -155,57 +174,7 @@ public class S_Level : MonoBehaviour
 
     void Update()
     {
-        switch (b_IsFullView)
-        {
-            case true:
-                // Note: Decrease the alpha value from '1' to '0'
-                if (f_ViewModeAlpha > 0)
-                {
-                    // The fade-out duration is 1 sec
-                    f_ViewModeAlpha -= Time.deltaTime;
-                    // Clamp the alpha value within 0 and 1
-                    f_ViewModeAlpha = Mathf.Clamp(f_ViewModeAlpha, 0f, 1f);
-                    // Fade out everything in the list_SpriteRenderer
-                    foreach (SpriteRenderer c_Sprite in list_ViewModeSprite)
-                    {
-                        c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
-                    }
-                    // Fade in the silhouette hint image
-                    // Note: Here f_HintAlpha is inverted, and its maximum value is '0.5'
-                    float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
-                    c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
-                    // Fade in the background sprites when in Full View mode
-                    c_BackgroundPauseSprite.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
-                    c_BackgroundShadowSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
-                }
-
-                break;
-
-
-            case false:
-                // Note: Increase the alpha value from '0' to '1'
-                if (f_ViewModeAlpha < 1)
-                {
-                    // The fade-in duration is 1 sec
-                    f_ViewModeAlpha += Time.deltaTime;
-                    // Clamp the alpha value within 0 and 1
-                    f_ViewModeAlpha = Mathf.Clamp(f_ViewModeAlpha, 0f, 1f);
-                    // Fade in everything in the list_SpriteRenderer
-                    foreach (SpriteRenderer c_Sprite in list_ViewModeSprite)
-                    {
-                        c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
-                    }
-                    // Fade out the silhouette hint image
-                    // Note: Here f_Alpha is inverted, and its minimum value is '0'
-                    float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
-                    c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
-                    // Fade out the background sprites when in Default View mode
-                    c_BackgroundPauseSprite.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
-                    c_BackgroundShadowSprite.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
-                }
-
-                break;
-        }
+        Update_ViewModeSprites();
     }
 
 
@@ -214,16 +183,65 @@ public class S_Level : MonoBehaviour
 
 
 
+    void Update_ViewModeSprites()
+    {
+        switch (b_FullView)
+        {
+            case true:
+                // Note: Decrease the alpha value from '1' to '0'
+                if (f_ViewModeAlpha > 0)
+                {
+                    // The fade-out duration is 1 sec
+                    f_ViewModeAlpha -= Time.deltaTime;
+                    f_ViewModeAlpha = Mathf.Clamp(f_ViewModeAlpha, 0f, 1f);
+                    // Fade out everything in the list_SpriteRenderer
+                    foreach (SpriteRenderer c_Sprite in list_ViewModeSprite)
+                        c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
+                    // Fade in the silhouette hint image
+                    // Note: Here f_HintAlpha is inverted, and its maximum value is '0.5'
+                    float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
+                    c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
+                    // Fade in the background sprites when in Full View mode
+                    c_BackgroundPause.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
+                    c_BackgroundShadow.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
+                }
+                break;
+            case false:
+                // Note: Increase the alpha value from '0' to '1'
+                if (f_ViewModeAlpha < 1)
+                {
+                    // The fade-in duration is 1 sec
+                    f_ViewModeAlpha += Time.deltaTime;
+                    f_ViewModeAlpha = Mathf.Clamp(f_ViewModeAlpha, 0f, 1f);
+                    // Fade in everything in the list_SpriteRenderer
+                    foreach (SpriteRenderer c_Sprite in list_ViewModeSprite)
+                        c_Sprite.color = new Color(1, 1, 1, f_ViewModeAlpha);
+                    // Fade out the silhouette hint image
+                    // Note: Here f_Alpha is inverted, and its minimum value is '0'
+                    float f_HintAlpha = (1f - f_ViewModeAlpha) - 0.5f; // Half second duration
+                    c_HintSprite.color = new Color(1, 1, 1, f_HintAlpha);
+                    // Fade out the background sprites when in Default View mode
+                    c_BackgroundPause.color = new Color(0.95f, 0.95f, 0.95f, 1f - f_ViewModeAlpha);
+                    c_BackgroundShadow.color = new Color(1, 1, 1, 1f - f_ViewModeAlpha);
+                }
+                break;
+        }
+        // Joystick visuals
+        float f_JoystickAlpha = (5.5f - c_Camera.orthographicSize) / 4f;
+        c_JoystickKnob.color = new Color(1, 1, 1, f_JoystickAlpha);
+        c_JoystickBase.color = new Color(1, 1, 1, f_JoystickAlpha);
+    }
+
+
+
     bool Initialize_Prerequisite()
     {
         // Get the total amount of Black Inks at the current level pool
         i_TotalInkPool = i_IdleInkPool + i_SpreadingInkPool + i_FadingInkPool + i_MovingInkPool + i_MaliciousInkPool;
         S_DebugLog.LevelLog("Total amount of Black Ink Slots required (Pool + Teleport) = ", $"{i_TotalInkPool} + {i_FadingInkPool}");
-
         // Get the total amount of Black Inks on the current level map
         i_TotalInkSlot = t_BlackInkParent.childCount;
         S_DebugLog.LevelLog("Total amount of Black Ink Slots (Map) = ", i_TotalInkSlot);
-
         // Check if total Black Ink on map is sufficient for the pool and teleport slots
         if (i_TotalInkSlot >= (i_TotalInkPool + i_FadingInkPool))
         {
@@ -242,7 +260,7 @@ public class S_Level : MonoBehaviour
 
 
 
-    void Initialize_BlackInk()
+    void Initialize_BlackInks()
     {
         Initialize_BlackInk_Phase_1_CreatingOrder();
         Initialize_BlackInk_Phase_2_AssigningType();
@@ -272,25 +290,25 @@ public class S_Level : MonoBehaviour
 
 
 
-    void Initialize_Revealer()
+    void Initialize_Revealers()
     {
         // Find the revealers' parent and store it into a local variable
         Transform t_RevealerParent = GameObject.Find("REVEALERS").transform;
         // Check the current map's parts amount then instantiate itself
-
+        int i_Count = 10;
         // Iterate through all of revealers and deactivate them
-        for (int i = 0; i < t_RevealerParent.childCount; i++)
+        for (int i = 1; i <= i_Count; i++)
         {
             // Get the current revealer's game object
-            GameObject o_Revealer = t_RevealerParent.GetChild(i).gameObject;
-            // Deactivate all revealers. Default state
+            GameObject o_Revealer = Instantiate(prefab_Revealer, t_RevealerParent);
+            o_Revealer.name = "Revealer_" + i;
             o_Revealer.SetActive(false);
         }
     }
 
 
 
-    void Initialize_Respawn()
+    void Initialize_Respawns()
     {
         // Local Variables
         int i_TotalPoint = t_RespawnParent.childCount;
@@ -307,9 +325,22 @@ public class S_Level : MonoBehaviour
 
 
 
-    void Initialize_Progression()
+    void Initialize_MenuBars()
     {
-        // Get the total amount of Parts 
+        // Set its default values
+        tmp_Lives.text = "3";
+        t_ProgressBar.position = new Vector3(-3.9f, t_ProgressBar.position.y, 0);
+        t_HintButton.gameObject.SetActive(false);
+        b_BoosterIcons = new bool[3];
+        c_BoosterIcons = new SpriteRenderer[b_BoosterIcons.Length];
+        // Then, Locate all BoosterIcons' Sprite Renderers
+        Transform t_BoosterIconParent = t_MenuBarParent.Find("BOOSTERICONS");
+        for (int i = 0; i < b_BoosterIcons.Length; i++)
+        {
+            c_BoosterIcons[i] = t_BoosterIconParent.GetChild(i).GetComponent<SpriteRenderer>();
+            c_BoosterIcons[i].gameObject.SetActive(false);
+        }
+        // Get the total amount of Parts in this level
         i_CompleteProgress = t_PartsParent.childCount;
         // Print out the log
         S_DebugLog.LevelLog("Total amount of Parts = ", i_CompleteProgress);
@@ -317,7 +348,7 @@ public class S_Level : MonoBehaviour
 
 
 
-    void Initialize_Hint()
+    void Initialize_Hints()
     {
         // Default value
         c_HintSprite.enabled = false;
@@ -325,18 +356,25 @@ public class S_Level : MonoBehaviour
 
 
 
-    void Initialize_Animation()
+    void Initialize_Animations()
     {
         // Deactivate the completion animation object at the beginning
-        t_AnimationParent.GetChild(0).gameObject.SetActive(false);
+        t_AnimationParent.gameObject.SetActive(false);
     }
 
 
 
-    void Initialize_Card()
+    void Initialize_Cards()
     {
-        // Deactivate the completion card object at the beginning
-        t_CardParent.GetChild(0).gameObject.SetActive(false);
+        // Then, Deactivate the parent object at the beginning
+        t_CardParent.gameObject.SetActive(false);
+    }
+
+
+
+    void Initialize_Summaries()
+    {
+        t_SummaryParent.gameObject.SetActive(false);
     }
 
 
@@ -353,14 +391,12 @@ public class S_Level : MonoBehaviour
         // Generate a list of unique random numbers
         for (int i = 0; i < i_TotalInkSlot; i++)
         {
-            // Firstly, Generate the first random number
+            // 1st, Generate the first random number
             i_RandomIndex = Random.Range(0, i_TotalInkSlot);
-            // Secondly, Check and repeat if the list already contains the current generated number
+            // 2nd, Check and repeat if the list already contains the current generated number
             while (list_InkOrder.Contains(i_RandomIndex))
-            {
                 i_RandomIndex = Random.Range(0, i_TotalInkSlot);
-            }
-            // Lastly, Add the generated unique number to the list
+            // 3rd, Add the generated unique number to the list
             list_InkOrder.Add(i_RandomIndex);
         }
         S_DebugLog.LevelLog("Black Ink's Order List = ", string.Join(", ", list_InkOrder.ConvertAll(i => i.ToString()).ToArray()));
@@ -370,111 +406,67 @@ public class S_Level : MonoBehaviour
 
     void Initialize_BlackInk_Phase_2_AssigningType()
     {
-        // Create and to record current index. Starts from zero
-        int i_CurrentIndex = 0;
-
-        // Create local variables to store various current data
+        // Local Variables
+        int i_CurrentIndex = 0; // Default is zero
         Vector3 v_CurrentPosition;
         GameObject o_BlackInk;
         S_BlackInk s_BlackInk;
-
-        // Firstly, Define as Idle Ink Type
+        // 1st, Define as Idle Ink Type
         while (i_IdleInkPool > 0)
         {
-            // Get the current Black Ink's child position based on the ordered list 
             v_CurrentPosition = t_BlackInkParent.GetChild(list_InkOrder[i_CurrentIndex]).position;
-            // Instantiate a real Black Ink game object to that child position, and cache to a local variable
             o_BlackInk = Instantiate(prefab_BlackInk, v_CurrentPosition, Quaternion.identity, t_BlackInkParent);
-            // Get access to this newly instantiated Black Ink's script
             s_BlackInk = o_BlackInk.GetComponent<S_BlackInk>();
-            // Define this specific Black Ink as this ink type
             s_BlackInk.Type = InkType.Idle;
-            // Change the name of this instantiated Black Ink object with the Order Index and Ink Type
             o_BlackInk.name = "BlackInk_" + list_InkOrder[i_CurrentIndex] + "_" + s_BlackInk.Type;
-            // Decrease the available slot for this ink type
             i_IdleInkPool -= 1;
-            // Increase the current order index
             i_CurrentIndex += 1;
         }
-
-        // Secondly, Define as Spreading Ink Type
+        // 2nd, Define as Spreading Ink Type
         while (i_SpreadingInkPool > 0)
         {
-            // Get the current Black Ink's child position based on the ordered list 
             v_CurrentPosition = t_BlackInkParent.GetChild(list_InkOrder[i_CurrentIndex]).position;
-            // Instantiate a real Black Ink game object to that child position
             o_BlackInk = Instantiate(prefab_BlackInk, v_CurrentPosition, Quaternion.identity, t_BlackInkParent);
-            // Get access to this newly instantiated Black Ink's script
             s_BlackInk = o_BlackInk.GetComponent<S_BlackInk>();
-            // Define this specific Black Ink as this ink type
             s_BlackInk.Type = InkType.Spreading;
-            // Change the name of this instantiated Black Ink object with the Order Index and Ink Type
             o_BlackInk.name = "BlackInk_" + list_InkOrder[i_CurrentIndex] + "_" + s_BlackInk.Type;
-            // Decrease the available slot for this ink type
             i_SpreadingInkPool -= 1;
-            // Increase the current order index
             i_CurrentIndex += 1;
         }
-
-        // Thirdly, Define as Fading Ink Type
+        // 3rd, Define as Fading Ink Type
         while (i_FadingInkPool > 0)
         {
-            // Get the current Black Ink's child position based on the ordered list 
             v_CurrentPosition = t_BlackInkParent.GetChild(list_InkOrder[i_CurrentIndex]).position;
-            // Instantiate a real Black Ink game object to that child position, and cache to a local variable
             o_BlackInk = Instantiate(prefab_BlackInk, v_CurrentPosition, Quaternion.identity, t_BlackInkParent);
-            // Get access to this newly instantiated Black Ink's script
             s_BlackInk = o_BlackInk.GetComponent<S_BlackInk>();
-            // Define this specific Black Ink as this ink type
             s_BlackInk.Type = InkType.Fading;
-            // Change the name of this instantiated Black Ink object with the Order Index and Ink Type
             o_BlackInk.name = "BlackInk_" + list_InkOrder[i_CurrentIndex] + "_" + s_BlackInk.Type;
-            // Decrease the available slot for this ink type
             i_FadingInkPool -= 1;
-            // Increase the current order index
             i_CurrentIndex += 1;
-            // Add this Black Ink object position as one of the teleportation's target positions
             list_InkTeleportSlot.Add(v_CurrentPosition);
         }
-
-        // Fourthly, Define as Moving Ink Type
+        // 4th, Define as Moving Ink Type
         while (i_MovingInkPool > 0)
         {
-            // Get the current Black Ink's child position based on the ordered list 
             v_CurrentPosition = t_BlackInkParent.GetChild(list_InkOrder[i_CurrentIndex]).position;
-            // Instantiate a real Black Ink game object to that child position, and cache to a local variable
             o_BlackInk = Instantiate(prefab_BlackInk, v_CurrentPosition, Quaternion.identity, t_BlackInkParent);
-            // Get access to this newly instantiated Black Ink's script
             s_BlackInk = o_BlackInk.GetComponent<S_BlackInk>();
-            // Define this specific Black Ink as this ink type
             s_BlackInk.Type = InkType.Moving;
-            // Change the name of this instantiated Black Ink object with the Order Index and Ink Type
             o_BlackInk.name = "BlackInk_" + list_InkOrder[i_CurrentIndex] + "_" + s_BlackInk.Type;
-            // Decrease the available slot for this ink type
             i_MovingInkPool -= 1;
-            // Increase the current order index
             i_CurrentIndex += 1;
         }
-
-        // Fifthly, Define as Malicious Ink Type
+        // 5th, Define as Malicious Ink Type
         while (i_MaliciousInkPool > 0)
         {
-            // Get the current Black Ink's child position based on the ordered list 
             v_CurrentPosition = t_BlackInkParent.GetChild(list_InkOrder[i_CurrentIndex]).position;
-            // Instantiate a real Black Ink game object to that child position, and cache to a local variable
             o_BlackInk = Instantiate(prefab_BlackInk, v_CurrentPosition, Quaternion.identity, t_BlackInkParent);
-            // Get access to this newly instantiated Black Ink's script
             s_BlackInk = o_BlackInk.GetComponent<S_BlackInk>();
-            // Define this specific Black Ink as this ink type
             s_BlackInk.Type = InkType.Malicious;
-            // Change the name of this instantiated Black Ink object with the Order Index and Ink Type
             o_BlackInk.name = "BlackInk_" + list_InkOrder[i_CurrentIndex] + "_" + s_BlackInk.Type;
-            // Decrease the available slot for this ink type
             i_MaliciousInkPool -= 1;
-            // Increase the current order index
             i_CurrentIndex += 1;
         }
-
     }
 
 
@@ -485,19 +477,12 @@ public class S_Level : MonoBehaviour
         // Record the empty Black Ink objects as the teleportation's target positions
         // Note: i_TotalInkPool value will be the same as i_CurrentIndex
         for (int i = i_TotalInkPool; i < i_TotalInkSlot; i++)
-        {
             list_InkTeleportSlot.Add(t_BlackInkParent.GetChild(list_InkOrder[i]).position);
-        }
-
         // Print out all stored teleport slots' details
         S_DebugLog.LevelLog("Total amount of Black Ink's Teleport Slots = ", list_InkTeleportSlot.Count);
-
         for (int i = 0; i < list_InkTeleportSlot.Count; i++)
-        {
             // Note: 'F2' means to show the float value in fixed-point 2 decimals format
             S_DebugLog.LevelLog($"Black Ink's Teleport Slot [{i}] = ", list_InkTeleportSlot[i].ToString("F2"));
-        }
-
     }
 
 
@@ -513,6 +498,7 @@ public class S_Level : MonoBehaviour
             Destroy(o_EmptyInk);
         }
     }
+
 
 
     void Initialize_BlackInk_Phase_5_StartCoroutine()
@@ -556,28 +542,20 @@ public class S_Level : MonoBehaviour
         // Increase the progress by 1 each time a masked part is revealed
         i_Progress += 1;
         // Calculate the percentage of current progress
-        float f_Percentage = ((float)i_Progress / (float)i_CompleteProgress) * 100;
+        float f_Percent = ((float)i_Progress / (float)i_CompleteProgress) * 100;
         // Print out the log
         S_DebugLog.Log($"Current Progress = {i_Progress} / {i_CompleteProgress} ------- ",
-        f_Percentage.ToString("F1") + "%");
-
-        // -------------------- ! HINT BUTTON APPEARANCE ! -------------------- //
-
+        f_Percent.ToString("F1") + "%");
+        // Move the progress bar indicator on the menu bar
+        float f_PosX = (.046f * f_Percent) - 3.9f;
+        t_ProgressBar.position = new Vector3(f_PosX, t_ProgressBar.position.y, 0);
         // Increase Hint button's alpha value after passing 70% progress
         // Note: Absolute path may become a dependency problem in the future
-        if (f_Percentage >= 70)
-        {
-            SpriteRenderer c_HintButtonSprite = t_MenuBarParent.GetChild(4).GetComponent<SpriteRenderer>();
-            c_HintButtonSprite.color = new Color(0, 0, 0, 1);
-        }
-
-        // -------------------- ! COMPLETION REQUIREMENT ! -------------------- //
-
+        if (f_Percent >= 70)
+            t_HintButton.gameObject.SetActive(true);
         // Proceed to level completion sequences
         if (i_Progress == i_CompleteProgress)
-        {
             StartCoroutine(Coroutine_Completion());
-        }
     }
 
 
@@ -585,13 +563,56 @@ public class S_Level : MonoBehaviour
     // Used in [S_Controller]
     public void Hint()
     {
-        // Calculate the percentage of current progress
-        float f_Percentage = ((float)i_Progress / (float)i_CompleteProgress) * 100;
-        // Check if the player managed to pass 70% progress
-        if (f_Percentage >= 70)
+        // c_HintSprite.enabled = !c_HintSprite.enabled;
+    }
+
+
+
+    // Used in [S_Booster], It contains both functions and a return method
+    public int BoosterIcon_Start(BoosterType Type)
+    {
+        // Local Variables
+        int i_Index = 0;
+        // Iterate through the BoosterIcon array to find an available slot
+        for (int i = 0; i < b_BoosterIcons.Length; i++)
         {
-            c_HintSprite.enabled = !c_HintSprite.enabled;
+            if (b_BoosterIcons[i] == false)
+            {
+                i_Index = i;
+                b_BoosterIcons[i] = true;
+                break;
+            }
         }
+        // Then, Assign a sprite to the selected BoosterIcon object
+        switch (Type)
+        {
+            case BoosterType.Offensive:
+                c_BoosterIcons[i_Index].sprite = Resources.Load<Sprite>("Sprites/IMG_Booster_Offensives");
+                break;
+            case BoosterType.Defensive:
+                c_BoosterIcons[i_Index].sprite = Resources.Load<Sprite>("Sprites/IMG_Booster_Defensives");
+                break;
+            case BoosterType.Others:
+                c_BoosterIcons[i_Index].sprite = Resources.Load<Sprite>("Sprites/IMG_Booster_Others");
+                break;
+        }
+        // Then, Activate the selected sprite gameobject
+        c_BoosterIcons[i_Index].gameObject.SetActive(true);
+
+        S_DebugLog.TestingLog("BoosterIcons Availability = ", b_BoosterIcons[0].ToString() + b_BoosterIcons[1] + b_BoosterIcons[2]);
+        // Lastly, Return the index back to its S_Booster
+        return i_Index;
+    }
+
+
+
+    // Used in [S_Booster]
+    public void BoosterIcon_End(int i_Index)
+    {
+        // Set the slot state to available as 'false'. Taken as 'true'
+        b_BoosterIcons[i_Index] = false;
+        // Turn off the selected sprite gameobject
+        c_BoosterIcons[i_Index].gameObject.SetActive(false);
     }
 
 
@@ -601,14 +622,15 @@ public class S_Level : MonoBehaviour
     {
         // Proceed to destroy the current player and create a new one
         StartCoroutine(Coroutine_Respawn());
-        // Lose one life. You can still continue even with 'zero' lives
-        // Note: More like "Chances", 'zero' means you have no more chances
-        // Note: Have to reach a value of '-1' to count as death
-        i_Life -= 1;
-        // Check if it is less than zero (reaches '-1'). If so, level failed
-        if (i_Life < 0)
+        // Lose one life. 1st Death = Revive. 2nd Death = Revive. 3rd Death = Game Over
+        // Note: Have to reach a value of '0' to count as death
+        i_Lives -= 1;
+        // Change its text indicator on the menu bar
+        tmp_Lives.text = $"{i_Lives}";
+        // Check if it is equal to zero. If so, level failed
+        if (i_Lives <= 0)
         {
-            S_DebugLog.TestingLog("You died! Current life value is = ", i_Life);
+            S_DebugLog.TestingLog("You died! Current life value is = ", i_Lives);
         }
     }
 
@@ -636,9 +658,7 @@ public class S_Level : MonoBehaviour
         {
             for (int i = 0; i < list_InkScript.Count; i++)
             {
-                // Local Variables
                 S_BlackInk s_BlackInk = list_InkScript[i];
-                //
                 if (!s_BlackInk.b_IsAppeared)
                 {
                     // Local Variables
@@ -654,11 +674,8 @@ public class S_Level : MonoBehaviour
                 }
             }
             // Note: Five computations per second
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(.2f);
         }
-
-        S_DebugLog.TestingLog("You have reached the end of the loop.", "");
-
     }
 
 
@@ -670,7 +687,7 @@ public class S_Level : MonoBehaviour
         // 1st, Instantiate a new splash object to represent visuals
         GameObject o_Splash = Instantiate(prefab_Splash, v_TapWorld, Quaternion.identity);
         yield return null;
-        // 2nd, Scale
+        // 2nd, Scale modifiers
         o_Splash.transform.localScale = Vector3.one * S_Booster.mod_SplashArea;
         // 3rd, Return an array of colliders if it overlapped with the user input
         Collider2D[] hits = Physics2D.OverlapCircleAll(v_CircleCenter, 0.2f * S_Booster.mod_SplashArea);
@@ -701,24 +718,19 @@ public class S_Level : MonoBehaviour
 
     IEnumerator Coroutine_Reveal(int i_SortingOrder, Transform t_Parts, Vector3 v_Position)
     {
-        // Firstly, Get the child's transform from the current revealer index
+        // 1st, Get the child's transform from the current revealer index
         Transform t_Revealer = t_RevealerParent.GetChild(i_CurrentRevealer);
-        // Secondly, Set its sorting order based on the player collider data
+        // 2nd, Set its sorting order based on the player collider data
         t_Revealer.GetComponent<S_Revealer>().SetTarget(i_SortingOrder);
-        // Thirdly, Place this revealer at the given position
+        // 3rd, Place this revealer at the given position
         t_Revealer.position = v_Position;
-        // Fourthly, Activate the current selected revealer
+        // 4th, Activate the current selected revealer
         t_Revealer.gameObject.SetActive(true);
-        // Fifthly, Loop the revealer index and reset it if it reaches the end
+        // 5th, Loop the revealer index and reset it if it reaches the end
         if (i_CurrentRevealer < t_RevealerParent.childCount - 1)
-        {
             i_CurrentRevealer += 1;
-        }
         else
-        {
             i_CurrentRevealer = 0;
-        }
-
         // Lastly, After four seconds, End the revealing process
         // The number of seconds here is defined by the animation duration 
         yield return new WaitForSeconds(4);
@@ -731,30 +743,30 @@ public class S_Level : MonoBehaviour
 
     IEnumerator Coroutine_Respawn()
     {
-        // Firstly, Disable all player's inputs
+        // 1st, Disable all player's inputs
         // Note: This will also stop returning to the player's rigidbody default drag
         s_Controller.enabled = false;
-        // Secondly, Make sure the camera stays in the player view
-        b_IsFullView = false;
-        // Thirdly, Set the target respawn point for the new player object
-        // // Check to see which respawn point is closest to the player
-        // // And only if they have accessed to there. If not, go to the second closest
+        // 2nd, Make sure the camera stays in the player view
+        b_FullView = false;
+        // 3rd, Set the target respawn point for the new player object
+        // Check to see which respawn point is closest to the player
+        // And only if they have accessed to there. If not, go to the second closest
         Vector3 v_RespawnPoint = t_RespawnParent.GetChild(0).position;
-        // Fourthly, Wait for the absorption to complete before respawning
+        // 4th, Wait for the absorption to complete before respawning
         yield return new WaitForSeconds(4);
 
         // -------------------- ! START RESPAWN ! -------------------- //
 
-        // Fifthly, Deactivate all scripts connected to the current player object
+        // 5th, Deactivate all scripts connected to the current player object
         s_Camera.enabled = false;
-        // Sixthly, Destroy the current dead player object
+        // 6th, Destroy the current dead player object
         Destroy(t_Player.parent.gameObject);
         yield return null;
-        // Seventhly, Instantiate a new player object to a specific respawn point
+        // 7th, Instantiate a new player object to a specific respawn point
         GameObject o_NewPlayer = Instantiate(prefab_Player, v_RespawnPoint, Quaternion.identity, t_PlayerParent);
         yield return null;
-        o_NewPlayer.name = "Player_Life_" + i_Life;
-        // Eightly, Re-cache this new player's transform into t_Player
+        o_NewPlayer.name = "Player_Life_" + i_Lives;
+        // 8th, Re-cache this new player's transform into t_Player
         t_Player = GameObject.FindWithTag("Player").transform;
         yield return null;
 
@@ -771,12 +783,14 @@ public class S_Level : MonoBehaviour
 
     IEnumerator Coroutine_Completion()
     {
-        // 1st, Disable all player's inputs
-        s_Controller.enabled = false;
-        // 2nd, Block all possible disturbing factors
+        // Local Variables 
+        float f_Time = 0f;
+        // 1st, Block all possible disturbing factors
         t_Player.GetComponent<CircleCollider2D>().enabled = false;
-        // 3rd, Wait for awhile and let the last masked part be revealed
-        yield return new WaitForSeconds(1);
+        // 2nd, Wait for awhile and let the last masked part be revealed
+        yield return new WaitForSeconds(2);
+        // 3rd, Disable all player's inputs
+        s_Controller.enabled = false;
 
         // -------------------- ! PREPARE ANIMATION ! -------------------- //
 
@@ -794,7 +808,7 @@ public class S_Level : MonoBehaviour
         GameObject o_Animation = t_AnimationParent.GetChild(0).gameObject;
         Animator c_Animation_Animator = o_Animation.GetComponent<Animator>();
         SpriteRenderer c_Animation_Sprite = o_Animation.GetComponent<SpriteRenderer>();
-        o_Animation.SetActive(true);
+        t_AnimationParent.gameObject.SetActive(true);
         c_Animation_Animator.speed = 0;
         c_Animation_Sprite.color = Color.clear;
         yield return null;
@@ -802,12 +816,10 @@ public class S_Level : MonoBehaviour
         // -------------------- ! START ANIMATION ! -------------------- //
 
         // 6th, Enter the full view mode
-        b_IsFullView = true;
-        // Local Variables 
-        float f_Time = 0f;
+        b_FullView = true;
         // 7th, Fade in both Panel and Animation's sprite
         // Note: This will be a 1 second loop and also it acts like Update()
-        while (f_Time <= 1)
+        while (f_Time < 1)
         {
             c_FullPanel_Completion_Sprite.color = new Color(0.89f, 0.89f, 0.89f, f_Time);
             c_Animation_Sprite.color = new Color(1, 1, 1, f_Time);
@@ -842,51 +854,112 @@ public class S_Level : MonoBehaviour
         c_FullPanel_Screenshot_Sprite.sortingOrder = 4;
         c_FullPanel_Screenshot_Sprite.color = Color.clear;
 
-        // -------------------- ! START SCREENSHOT ! -------------------- //
+        // -------------------- ! SCREENSHOT TIME ! -------------------- //
 
         // 12th, Pause the animation in the middle
         c_Animation_Animator.speed = 0;
-        // 13th, Make both panels appear and stay for a while
+        // 13th, Make both panels appear 
         c_FullPanel_Screenshot_Sprite.color = Color.white;
-        yield return null;
         c_FullPanel_Black_Sprite.color = new Color(0, 0, 0, 0.6f);
-        yield return new WaitForSeconds(1);
-        // 14th, Prepare the card object
-        GameObject o_Card = t_CardParent.GetChild(0).gameObject;
-        SpriteRenderer c_Card_Sprite = o_Card.GetComponent<SpriteRenderer>();
-        o_Card.SetActive(true);
+        yield return null;
+        // 14th, Prepare the card objects
+        SpriteRenderer c_Card_Sprite = t_CardParent.GetChild(0).GetComponent<SpriteRenderer>();
+        SpriteRenderer c_Card_Blank = t_CardParent.GetChild(1).GetComponent<SpriteRenderer>();
+        t_CardParent.gameObject.SetActive(true);
         c_Card_Sprite.color = Color.clear;
+        c_Card_Blank.color = Color.clear;
         yield return null;
         // 15th, Fade out Panel_Screenshot's sprite but fade in Card's sprite
         // Note: This will be a 2 seconds loop and also it acts like Update()
         // Note: Have to adjust the delta time calculation to slow down the timer 
         f_Time = 0f;
-        while (f_Time <= 1)
+        while (f_Time < 1)
         {
             c_FullPanel_Screenshot_Sprite.color = new Color(1, 1, 1, 1f - f_Time);
             c_Card_Sprite.color = new Color(1, 1, 1, 0.4f + f_Time);
-            // Calculate the time spent in seconds
-            f_Time += Time.deltaTime / 2f;
             // Wait for the next frame before looping over
+            f_Time += Time.deltaTime / 2f;
             yield return null;
         }
         // 16th, Wait for a while before continuing the animation
         yield return new WaitForSeconds(4);
 
+        // -------------------- ! SUMMARY TIME ! -------------------- //
+
+        // 17th, Fade in the blank card sprite
+        // Note: This will be a 1 second loop and also it acts like Update()
+        f_Time = 0f;
+        while (f_Time < 1)
+        {
+            c_Card_Blank.color = new Color(1, 1, 1, f_Time);
+            // Wait for the next frame before looping over
+            f_Time += Time.deltaTime;
+            yield return null;
+        }
+        c_Card_Sprite.gameObject.SetActive(false);
+        // Local Variables
+        SpriteRenderer c_Star_1 = t_SummaryParent.GetChild(0).GetComponent<SpriteRenderer>();
+        SpriteRenderer c_Star_2 = t_SummaryParent.GetChild(1).GetComponent<SpriteRenderer>();
+        SpriteRenderer c_Star_3 = t_SummaryParent.GetChild(2).GetComponent<SpriteRenderer>();
+        TextMeshPro tmp_TitleChapter = t_SummaryParent.GetChild(3).GetComponent<TextMeshPro>();
+        TextMeshPro tmp_TitleLevel = t_SummaryParent.GetChild(4).GetComponent<TextMeshPro>();
+        SpriteRenderer c_Line = t_SummaryParent.GetChild(5).GetComponent<SpriteRenderer>();
+        TextMeshPro tmp_TitleSummary = t_SummaryParent.GetChild(6).GetComponent<TextMeshPro>();
+        TextMeshPro tmp_ValueSummary = t_SummaryParent.GetChild(7).GetComponent<TextMeshPro>();
+        int[] i_StarColors = new int[] { 0, 0, 0 };
+        // 18th, Set the color of the stars
+        for (int i = 1; i <= 3; i++)
+            if (i_Lives >= i)
+                i_StarColors[i - 1] = 1;
+        // 19th, Fade in all summary' objects in ascending order
+        // Note: This will be a x seconds loop and also it acts like Update()
+        t_SummaryParent.gameObject.SetActive(true);
+        f_Time = 0f;
+        while (f_Time < 7)
+        {
+            c_Star_1.color = new Color(i_StarColors[0], i_StarColors[0], i_StarColors[0], f_Time);
+            c_Star_2.color = new Color(i_StarColors[1], i_StarColors[1], i_StarColors[1], f_Time - 0.5f);
+            c_Star_3.color = new Color(i_StarColors[2], i_StarColors[2], i_StarColors[2], f_Time - 1.0f);
+            tmp_TitleChapter.color = new Color(0, 0, 0, f_Time - 1.25f);
+            tmp_TitleLevel.color = new Color(0, 0, 0, f_Time - 1.5f);
+            c_Line.color = new Color(0, 0, 0, Mathf.Clamp(f_Time - 1.75f, 0, 0.2f));
+            tmp_TitleSummary.color = new Color(.2f, .2f, .2f, f_Time - 2.0f);
+            tmp_ValueSummary.color = new Color(.2f, .2f, .2f, f_Time - 2.5f);
+            // Wait for the next frame before looping over
+            f_Time += Time.deltaTime;
+            yield return null;
+        }
+        // 20th, Instantiate and fade in another blank card sprite
+        GameObject o_Card_Blank2 = Instantiate(c_Card_Blank.gameObject, t_CardParent);
+        SpriteRenderer c_Card_Blank2 = o_Card_Blank2.GetComponent<SpriteRenderer>();
+        c_Card_Blank2.color = Color.clear;
+        c_Card_Blank2.sortingOrder = 7;
+        yield return null;
+        f_Time = 0f;
+        while (f_Time < 1)
+        {
+            c_Card_Blank2.color = new Color(1, 1, 1, Mathf.SmoothStep(0, 1, f_Time));
+            // Wait for the next frame before looping over
+            f_Time += Time.deltaTime;
+            yield return null;
+        }
+        // 21st, Then, Deactivate the summary parent object and first blank card
+        t_SummaryParent.gameObject.SetActive(false);
+        c_Card_Blank.gameObject.SetActive(false);
+
         // -------------------- ! CONTINUE ANIMATION ! -------------------- //
 
-        // 17th, Fade out both Panel_Black and Card's sprite, also slowly resume animation
+        // 22nd, Fade out both Panel_Black and Card's sprite, also slowly resume animation
         // Note: This will be a 1.5 seconds loop and also it acts like Update()
         // Note: Have to adjust the delta time calculation to slow down the timer 
         f_Time = 0f;
-        while (f_Time <= 1)
+        while (f_Time < 1)
         {
-            c_Card_Sprite.color = new Color(1, 1, 1, 1f - f_Time);
+            c_Card_Blank2.color = new Color(1, 1, 1, 1f - f_Time);
             c_FullPanel_Black_Sprite.color = new Color(0, 0, 0, 0.6f - f_Time);
             c_Animation_Animator.speed = f_Time;
-            // Calculate the time spent in seconds
-            f_Time += Time.deltaTime / 1.5f;
             // Wait for the next frame before looping over
+            f_Time += Time.deltaTime / 1.5f;
             yield return null;
 
         }
@@ -895,13 +968,13 @@ public class S_Level : MonoBehaviour
 
         // -------------------- ! END ANIMATION ! -------------------- //
 
+        // Send this level score back to the S_Data
+        string SceneName = SceneManager.GetActiveScene().name;
+        S_Data.Instance.SetScore(SceneName, i_Lives);
         // Go to the next scene, transitioning
 
 
 
 
     }
-
-
-
 }

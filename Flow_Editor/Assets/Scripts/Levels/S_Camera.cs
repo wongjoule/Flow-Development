@@ -25,7 +25,7 @@ public class S_Camera : MonoBehaviour
     {
         c_Camera = GetComponent<Camera>();
         t_Player = GameObject.FindWithTag("Player").transform;
-        s_Level = GameObject.Find("LEVELSYSTEM").GetComponent<S_Level>();
+        s_Level = GameObject.Find("SYSTEMS").GetComponent<S_Level>();
     }
 
 
@@ -33,6 +33,9 @@ public class S_Camera : MonoBehaviour
     void Start()
     {
         Initialize_AspectRatio();
+
+
+        Application.targetFrameRate = 60; // Temp
     }
 
 
@@ -47,7 +50,7 @@ public class S_Camera : MonoBehaviour
 
     void Update()
     {
-        if (s_Level.b_IsFullView)
+        if (s_Level.b_FullView)
         {
             // Move to the center of the world
             transform.position = Vector3.SmoothDamp(transform.position, Vector3.zero, ref v_MoveVelocity, f_MoveDuration);

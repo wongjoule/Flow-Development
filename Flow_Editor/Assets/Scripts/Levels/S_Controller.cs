@@ -5,6 +5,7 @@ using UnityEngine;
 public class S_Controller : MonoBehaviour
 {
     // Generic Variables
+    public static bool b_Gyro = false;
     Transform t_Camera;
     Camera c_Camera;
     S_Player s_Player;
@@ -40,16 +41,14 @@ public class S_Controller : MonoBehaviour
     void Awake()
     {
         // Priorities
-        if (!Application.isEditor)
-        {
+        // if (!Application.isEditor)
             s_SubMenu = GameObject.Find("SUBMENUS").GetComponent<S_SubMenu>();
-        }
         // Generic Variables
         s_Player = GameObject.FindWithTag("Player").GetComponent<S_Player>();
         t_Camera = GameObject.FindWithTag("MainCamera").transform;
         s_Camera = t_Camera.GetComponent<S_Camera>();
         c_Camera = t_Camera.GetComponent<Camera>();
-        s_Level = GameObject.Find("LEVELSYSTEM").GetComponent<S_Level>();
+        s_Level = GameObject.Find("SYSTEMS").GetComponent<S_Level>();
         // Variables - Joystick
         t_Joystick = GameObject.FindWithTag("Joystick").transform;
         t_JoystickBackground = t_Joystick.parent.GetChild(1);
@@ -76,16 +75,15 @@ public class S_Controller : MonoBehaviour
         Controller_Level_ViewMode();
         Controller_MenuBar_Button();
         // Functions that restricted to only the player view
-        if (!s_Level.b_IsFullView)
+        if (!s_Level.b_FullView)
         {
-            // Controller_Player_Slow();
+            if (S_Controller.b_Gyro)
+                Controller_Player_Slow();
             Controller_Skill_Splash();
         }
         // Editor-only Cheat Functions
         if (Application.isEditor)
-        {
             Cheats();
-        }
     }
 
 
@@ -99,18 +97,12 @@ public class S_Controller : MonoBehaviour
 
     void LateUpdate()
     {
-        // Calculate the joystick's origin point at the current frame
-        Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
-
-        // Have a if-function here - gyro & joystick
-        if (true)
+        if (!b_Gyro)
         {
+            // Calculate the joystick's origin point at the current frame
+            Vector3 v_Origin = t_Camera.position + v_JoystickOffset;
+            // If Gyro is false, Joystick will be activated
             Controller_Joystick_Control(v_Origin);
-            // Return the joystick to its origin position when not in use
-            if (!b_IsJoystickActivated)
-            {
-                Controller_Joystick_Origin(v_Origin);
-            }
         }
     }
 
@@ -127,13 +119,11 @@ public class S_Controller : MonoBehaviour
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
-
             switch (touch.phase)
             {
                 case TouchPhase.Began:
                     s_Player.Slow(1);
                     break;
-
                 case TouchPhase.Ended:
                     s_Player.Slow(0);
                     break;
@@ -146,13 +136,9 @@ public class S_Controller : MonoBehaviour
         {
             // Hold down [LeftShift] to slow down the player
             if (Input.GetKey(key_Player_Slow))
-            {
                 s_Player.Slow(1);
-            }
             else if (Input.GetKeyUp(key_Player_Slow))
-            {
                 s_Player.Slow(0);
-            }
         }
     }
 
@@ -174,7 +160,6 @@ public class S_Controller : MonoBehaviour
                     // Record the first touch position
                     v_TapPosition = touch.position;
                     break;
-
                 case TouchPhase.Began:
                     // Check the interval time and whether both taps are in the same place
                     if (Time.time < f_TapInterval && Vector3.Distance(v_TapPosition, touch.position) < 30)
@@ -215,20 +200,13 @@ public class S_Controller : MonoBehaviour
 
 
 
-    void Controller_Joystick_Origin(Vector3 v_Origin)
-    {
-        // Return the joystick to its origin position when not in use
-        t_Joystick.position = v_Origin;
-    }
-
-
-
     void Controller_Joystick_Control(Vector3 v_Origin)
     {
-        // -------------------- ! GENERAL FUNCTION ! -------------------- //
-
         // Return the joystick's background to its origin position every frame
         t_JoystickBackground.position = v_Origin;
+        // Return the joystick to its origin position when not in use
+        if (!b_IsJoystickActivated)
+            t_Joystick.position = v_Origin;
 
         // -------------------- ! ALL INPUT ! -------------------- //
 
@@ -239,9 +217,7 @@ public class S_Controller : MonoBehaviour
             Vector3 v_InputWorld = c_Camera.ScreenToWorldPoint(Input.mousePosition);
             // 2nd, Check whether the user input is within the joystick's detection area
             if ((v_InputWorld - v_Origin).sqrMagnitude < 0.1f)
-            {
                 b_IsJoystickActivated = true;
-            }
         }
         // Start to move the player only when the boolean is true and held down
         else if (Input.GetMouseButton(0) && b_IsJoystickActivated)
@@ -256,9 +232,7 @@ public class S_Controller : MonoBehaviour
             v_Movement = v_Direction;
             // 5th, Check whether the user input is within the joystick's detection area
             if ((v_InputWorld - v_Origin).sqrMagnitude < .09f)
-            {
                 t_Joystick.position = v_InputWorld;
-            }
             // Lastly, If the touch exceeds, clamp the joystick's visual within that area
             else
             {
@@ -281,21 +255,20 @@ public class S_Controller : MonoBehaviour
     {
         // -------------------- ! MOBILE INPUT ! -------------------- //
 
-        // The Accelerometer mechanism will be used to move the player
-        //  v_MobileInput = new Vector2(Input.acceleration.x, Input.acceleration.y);
+        if (b_Gyro)
+            // The Accelerometer mechanism will be used to move the player
+            v_Movement = new Vector2(Input.acceleration.x, Input.acceleration.y);
 
         // -------------------- ! EDITOR INPUT ! -------------------- //
 
         if (Application.isEditor)
-        {
             // Using [W], [A], [S], [D] to move the player
-            // v_Movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        }
+            v_Movement = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
         // -------------------- ! GENERAL FUNCTIONS ! -------------------- //
 
-        // Note: Default value is 4
-        v_Movement *= 4f * S_Booster.mod_MoveSpeed;
+        // Note: Default value is 5
+        v_Movement *= 5f * S_Booster.mod_MoveSpeed;
         // Use the FixedUpdate method of this script to move the player
         s_Player.Move(v_Movement);
     }
@@ -313,7 +286,7 @@ public class S_Controller : MonoBehaviour
                 // Set the boolean to true in S_Level
                 // Note: This also ignore the 'Tap & Hold' function during the Full View
                 // Note: This also change some of the sprite behavior in S_Level
-                s_Level.b_IsFullView = true;
+                s_Level.b_FullView = true;
                 // The player will be frozen at its current position
                 s_Player.Slow(2);
             }
@@ -322,7 +295,7 @@ public class S_Controller : MonoBehaviour
                 // Set the boolean to false in S_Level
                 // Note: Restore the 'Tap & Hold' function during the Player View
                 // Note: This also change some of the sprite behavior in S_Level
-                s_Level.b_IsFullView = false;
+                s_Level.b_FullView = false;
                 // Restore the player's movement speed
                 s_Player.Slow(0);
             }
@@ -337,7 +310,7 @@ public class S_Controller : MonoBehaviour
                 // Set the boolean to true in S_Level
                 // Note: This also ignore the 'Tap & Hold' function during the Full View
                 // Note: This also toggle the viewing mode behavior in S_Level
-                s_Level.b_IsFullView = true;
+                s_Level.b_FullView = true;
                 // The player will be frozen at its current position
                 s_Player.Slow(2);
             }
@@ -346,7 +319,7 @@ public class S_Controller : MonoBehaviour
                 // Set the boolean to false in S_Level
                 // Note: Restore the 'Tap & Hold' function during the Player View
                 // Note: This also toggle the viewing mode behavior in S_Level
-                s_Level.b_IsFullView = false;
+                s_Level.b_FullView = false;
                 // Restore the player's movement speed
                 s_Player.Slow(0);
             }
@@ -373,10 +346,8 @@ public class S_Controller : MonoBehaviour
                 Collider2D hit = Physics2D.OverlapPoint(new Vector2(v_TapWorld.x, v_TapWorld.y));
                 // Thirdly, Check if it is a button or not if a collider is hit
                 if (hit != null)
-                {
                     // Lastly, Find and execute the specific button function
                     PressButton(hit);
-                }
             }
         }
 
@@ -395,10 +366,8 @@ public class S_Controller : MonoBehaviour
                 Collider2D hit = Physics2D.OverlapPoint(new Vector2(v_TapWorld.x, v_TapWorld.y));
                 // Thirdly, Check if it is a button or not if a collider is hit
                 if (hit != null)
-                {
                     // Lastly, Find and execute the specific button function
                     PressButton(hit);
-                }
             }
         }
     }
@@ -423,9 +392,7 @@ public class S_Controller : MonoBehaviour
         // ------------- ! Super Revealer ! ------------- //
 
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(key_Cheat_RevealAll))
-        {
             StartCoroutine(Coroutine_RevealAll());
-        }
 
         // ------------- ! Instant Level Completion ! ------------- //
 
@@ -435,9 +402,7 @@ public class S_Controller : MonoBehaviour
             int i_Total = GameObject.Find("PARTS").transform.childCount;
             // Repeat adding progress until it reaches the total amount of Parts
             for (int i = 1; i < i_Total; i++)
-            {
                 s_Level.Progress();
-            }
             // Print warning log to show that a cheat function has been executed
             S_DebugLog.WarningLog("Successfully Executed Cheat - Level Completion");
         }
@@ -476,16 +441,12 @@ public class S_Controller : MonoBehaviour
             case "Button_Back":
                 S_Menu.BackButton();
                 break;
-
             case "Button_SubMenu":
                 s_SubMenu.Open();
                 break;
-
             case "Button_Hint":
                 s_Level.Hint();
                 break;
-
-
         }
     }
 

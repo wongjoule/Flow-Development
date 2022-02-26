@@ -9,9 +9,7 @@ public class S_BlackInk : MonoBehaviour
     [HideInInspector] public bool b_IsAppeared = false;
     Animator c_Animator;
     S_Level s_Level;
-
-    // Variables - Absorb
-    float f_InkScale;
+    float f_InkScale = .08f; // Default Size, .05 for Clone Size
 
     // Variables - Moving Ink
     Vector3 v_Lateral_Target = Vector3.zero;
@@ -22,13 +20,6 @@ public class S_BlackInk : MonoBehaviour
     {
         c_Animator = GetComponent<Animator>();
         s_Level = GameObject.FindWithTag("Level").GetComponent<S_Level>();
-    }
-
-
-
-    void Start()
-    {
-        f_InkScale = transform.localScale.x;
     }
 
 
@@ -90,6 +81,14 @@ public class S_BlackInk : MonoBehaviour
 
 
 
+    // Used by Spreading's Source Ink
+    public void Initialize_CloneInk()
+    {
+        f_InkScale = .05f;
+    }
+
+
+
     // ------------------------------------------------------------ //
 
 
@@ -114,19 +113,16 @@ public class S_BlackInk : MonoBehaviour
         List<Vector3> list_CloneVelocity = new List<Vector3>();
         List<Transform> list_CloneTransform = new List<Transform>();
         GameObject prefab_BlackInk = s_Level.prefab_BlackInk;
-        Vector3 v_ScaleTarget = new Vector3(0.05f, 0.05f, 0.05f);
-
-        // Firstly, Create a new game object to record a random target position
+        // 1st, Create a new game object to record a random target position
         GameObject o_Empty = new GameObject("Empty Anchor Object");
         yield return null;
-
-        // Secondly, Move o_Empty to the outer boundary of the area within the radius
+        // 2nd, Move o_Empty to the outer boundary of the area within the radius
         o_Empty.transform.position = transform.position;
         yield return null;
         o_Empty.transform.Translate(0.4f, 0, 0);
         yield return null;
 
-        // Thirdly, Create target positions for clones and set up the list_Velocity
+        // 3rd, Create target positions for clones and set up the list_Velocity
         for (int i = 0; i < i_RandomClone; i++)
         {
             o_Empty.transform.RotateAround(transform.position, Vector3.forward, (i * 120) + Random.Range(0, 60));
@@ -136,7 +132,7 @@ public class S_BlackInk : MonoBehaviour
             yield return null;
         }
 
-        // Fourthly, Add an extra layer of variation to the defined positions
+        // 4th, Add an extra layer of variation to the defined positions
         for (int i = 0; i < list_ClonePosition.Count; i++)
         {
             Vector3 v_Variation = list_ClonePosition[i];
@@ -147,15 +143,15 @@ public class S_BlackInk : MonoBehaviour
             list_ClonePosition[i] = v_Variation;
         }
 
-        // Fifthly, Instantiate new clones based on the given i_RandomClone value
+        // 5th, Instantiate new clones based on the given i_RandomClone value
         for (int i = 0; i < i_RandomClone; i++)
         {
             GameObject o_Clone = Instantiate(prefab_BlackInk, transform.position, Quaternion.identity, transform.parent);
             yield return null;
             // Configurations of newly made clone ink object
             // Note: The name index will start at one
-            o_Clone.name = "BlackInk_Clone_" + (i + 1);
-            o_Clone.transform.localScale = v_ScaleTarget;
+            o_Clone.name = "CloneInk_" + (i + 1);
+            o_Clone.GetComponent<S_BlackInk>().Initialize_CloneInk();
             // Add to the list
             list_CloneTransform.Add(o_Clone.transform);
             o_Clone.GetComponent<Animator>().SetTrigger("Appear");
@@ -163,16 +159,16 @@ public class S_BlackInk : MonoBehaviour
             s_Level.list_ViewModeSprite.Add(o_Clone.GetComponent<SpriteRenderer>());
             yield return null;
         }
-
-        // Sixthly, Clean up and destroy that empty anchor object
+        // 6th, Clean up and destroy that empty anchor object
         Destroy(o_Empty);
         yield return new WaitForSeconds(5);
 
         // Local Variables
         float f_TimeSpent = 0.0f;
-        Vector3 v_ScaleVelocity = Vector3.zero;
-
-        // Finally, move all clones to their target location while shrinking in size
+        // 7th, Shrink the scale of this ink's source
+        f_InkScale *= .6f;
+        transform.localScale = new Vector3(.06f, .06f, .06f);
+        // Lastly, move all clones to their target location while shrinking in size
         // Note: This will be a 7 seconds loop and also it acts like Update()
         while (f_TimeSpent <= 7)
         {
@@ -186,8 +182,6 @@ public class S_BlackInk : MonoBehaviour
                 // Note: 'ref' The returned value must be assigned back to the list
                 list_CloneVelocity[i] = v_CloneVelocity;
             }
-
-            transform.localScale = Vector3.SmoothDamp(transform.localScale, v_ScaleTarget, ref v_ScaleVelocity, 0.1f);
             // Calculate the time
             f_TimeSpent += Time.deltaTime;
             // Wait for the next frame before looping over

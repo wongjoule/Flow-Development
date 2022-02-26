@@ -2857,7 +2857,6 @@ GameObject:
   m_Component:
   - component: {fileID: 626964966}
   - component: {fileID: 626964965}
-  - component: {fileID: 626964967}
   m_Layer: 0
   m_Name: IMG_Humming_4096
   m_TagString: Untagged
@@ -2930,45 +2929,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &626964967
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 626964964}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 40.96, y: 40.96}
-    newSize: {x: 40.96, y: 40.96}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: 9.307333, y: 0.4358229}
-      - {x: 8.05149, y: 0.076610416}
-      - {x: 7.5920124, y: -0.22252166}
-      - {x: 7.0691304, y: -0.6524482}
-      - {x: 7.895195, y: -0.6293602}
-      - {x: 8.8528805, y: -0.6571256}
-      - {x: 10.326422, y: -0.7649156}
-      - {x: 11.787083, y: -1.0333741}
-      - {x: 13.2799015, y: -1.3258115}
-      - {x: 14.794182, y: -1.6765712}
-      - {x: 14.22851, y: -1.3159878}
-      - {x: 13.278798, y: -0.80080044}
-      - {x: 12.244531, y: -0.3834704}
-      - {x: 10.821627, y: 0.04293084}
 --- !u!1 &670439051
 GameObject:
   m_ObjectHideFlags: 0

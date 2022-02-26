@@ -6,27 +6,33 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menus/Generals/MENU_HOME.unity
+    path: Assets/Scenes/Menus/Commons/OPENING.unity
+    guid: 2616998299b00c84589d1533bbc144aa
+  - enabled: 1
+    path: Assets/Scenes/Menus/Commons/MENU_HOME.unity
     guid: 7ada7cc1398e1134c807ec3f06a6645a
   - enabled: 1
-    path: Assets/Scenes/Menus/Generals/MENU_CATEGORY.unity
+    path: Assets/Scenes/Menus/Commons/MENU_CATEGORY.unity
     guid: 7c70a796a29b4c9448de79329a5900c8
   - enabled: 1
-    path: Assets/Scenes/Menus/Levels/MENU_LEVELS.unity
+    path: Assets/Scenes/Menus/LevelsROOT/MENU_LEVELS.unity
     guid: fabc1272f272d8b4babf2015914186d8
   - enabled: 1
-    path: Assets/Scenes/Menus/Levels/Stories/MENU_LEVELS_STORIES_CH1.unity
+    path: Assets/Scenes/Menus/LevelsROOT/Stories/MENU_LEVELS_STORIES_CH1.unity
     guid: bb34f1e8c1552c84093bd0a150c1cdaa
   - enabled: 1
-    path: Assets/Scenes/Menus/Cards/MENU_CARDS.unity
+    path: Assets/Scenes/Menus/CardsROOT/MENU_CARDS.unity
     guid: 8bd771d3c3d66904dab1a5f0c0f17901
   - enabled: 1
-    path: Assets/Scenes/Menus/Artists/MENU_ARTISTS.unity
+    path: Assets/Scenes/Menus/ArtistsROOT/MENU_ARTISTS.unity
     guid: b7b39b6ebedcfd74a8f2355a3e20c13b
   - enabled: 1
-    path: Assets/Scenes/Menus/Artists/Profiles/MENU_ARTISTS_NAME1.unity
+    path: Assets/Scenes/Menus/ArtistsROOT/Profiles/MENU_ARTISTS_NAME1.unity
     guid: 29f799f4abcbe264f86e3a74df6c7343
   - enabled: 1
     path: Assets/Scenes/JouleWorkingScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Levels/Stories/CH1/STORIES_CH1_L1.unity
+    guid: 2f3bc7bb18d36aa4e9bb52cd47124a2b
   m_configObjects: {}

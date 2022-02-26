@@ -63,7 +63,7 @@ public class S_SceneSelector : MonoBehaviour
             switch (i_Vertical)
             {
                 case 1:
-                    SceneManager.LoadScene("JouleWorkingScene");
+                    SceneManager.LoadScene("STORIES_CH1_L1");
                     break;
             }
         }
